@@ -53,6 +53,58 @@ O motor de simulação deles é o pacote `Rsimpop`.
 
 ---
 
+## Dados obtidos — inventário
+
+### Watson 2020 (CC0) — `dados/watson2020/`
+
+Oito pastas correspondendo às figuras do artigo, 196 CSVs no total. O arquivo
+que interessa está em `Maximum_likelihood_estimations/`:
+
+**`all_studies_trimmed_all_genes.csv`** — o alvo de calibração do projeto.
+
+```
+VAF,age,variant,gene,study
+0.0076,55,R404*,ASXL1,Acuna2017
+```
+
+| | |
+|---|---|
+| Linhas | 1.674 variantes |
+| Colunas | `VAF`, `age`, `variant`, `gene`, `study` |
+| Coortes | Jaiswal2014 (466), Coombs2017 (378), Genovese2014 (197), Acuna2017 (182), Young2019 (158), ZinkWGS (125), McKerrel2015 (112), Desai2018 (31), Young2016 (26) |
+| Genes principais | DNMT3A (779), TET2 (126), JAK2 (86), ASXL1 (73), TP53 (64), SF3B1 (63), SRSF2 (44), CBL (35) |
+| Faixa de VAF | 0,0008 a 0,9091 |
+| Faixa de idade | 5 a 98 anos |
+
+> [!WARNING]
+> **663 das 1.674 linhas têm `noagedata` no lugar da idade.** Restam **1.012
+> variantes** com VAF e idade utilizáveis. Filtrar isso é o primeiro passo de
+> qualquer análise — e passar despercebido produziria uma curva idade-VAF
+> silenciosamente errada.
+
+Outros arquivos relevantes na mesma coleção:
+
+| Pasta | Serve para |
+|---|---|
+| `Mutation_rate_calculations` | taxas de mutação por contexto trinucleotídico — **entrada do modelo** |
+| `Maximum_likelihood_estimations` | estimativas de aptidão obtidas pelos autores — **gabarito da nossa inferência** |
+| `Age_prevalence_of_DNMT3A_R882H_and_R882C_variants` | coortes brutas: McKerrel (112 linhas, VAF e idade) e Coombs (1.591 amostras clínicas) |
+| `Estimating_fitness_effects_of_infrequently_mutated_sites` | efeito de aptidão sítio a sítio |
+
+### Mitchell 2022 (CC BY 4.0) — `dados/mitchell2022/`
+
+O pacote completo do Mendeley tem **53 arquivos e 5,15 GB descompactados**,
+quase tudo conjuntos de mutações para análise dN/dS — não é o nosso problema
+agora.
+
+Extraído apenas o que serve: **`Summary_cut.csv`** (364 KB, 3.592 linhas), com
+`donor_id`, `age`, `colony_ID`, `cell_type`, `sample_type`, `timepoint`.
+
+O zip original ficou em `~/Downloads/np54zjkvxr-1.zip`. Pode apagar — o resto
+do conteúdo só é necessário se um dia formos para reconstrução filogenética.
+
+---
+
 ## O que exige download manual
 
 Estas fontes exigem navegador. Tentativas programáticas esbarram em

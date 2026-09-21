@@ -51,7 +51,19 @@ Shape responds to fitness; counts respond to mutation rate, and counts need a
 screening denominator the data does not carry. ([`FINDINGS.md`](analysis/FINDINGS.md),
 [`04_abc.py`](analysis/04_abc.py))
 
-### 4. Study designs recover very different amounts of a known truth
+### 4. Two of the three designs cannot be inverted at all
+
+Stage E found the age regression is non-monotonic in `s`: it rises then falls, so
+one observed slope matches several truths. Stage J found the same of the
+longitudinal estimator — the median growth rate peaks near `s` = 0.12 and decays
+toward zero, because a fitter clone is already saturating when follow-up starts.
+
+The VAF spectrum is monotonic across the whole grid. **It is the only one of the
+three that can be fitted to recover a fitness**, which is a sharper reason to
+prefer it than any comparison of accuracy.
+([`STAGE_J_FABRE_GRID.md`](analysis/STAGE_J_FABRE_GRID.md))
+
+### 5. Study designs recover very different amounts of a known truth
 
 Given a simulated cohort whose fitness is set by construction:
 
@@ -65,7 +77,7 @@ The age regression is worse than biased — it is **non-monotonic** in `s`, so i
 has no inverse: one observed slope is compatible with several very different
 truths. ([`METHOD_BIAS.md`](analysis/METHOD_BIAS.md))
 
-### 5. That ordering holds in 394 real people
+### 6. That ordering holds in 394 real people
 
 Fabre's SardiNIA cohort allows all three designs on the same individuals.
 
@@ -83,7 +95,7 @@ clones already detectable at enrolment drops the measured growth rate from
 0.0703 to 0.0455 per year — a 35% loss, non-overlapping intervals.
 ([`STAGE_F_REAL_COHORT.md`](analysis/STAGE_F_REAL_COHORT.md))
 
-### 6. Clones slow because the marrow fills, not because they tire
+### 7. Clones slow because the marrow fills, not because they tire
 
 Regressing per-clone deceleration on three candidates: the carrier's total
 fitness-weighted burden growth gives **R² = 0.956**, the clone's own size 0.271,
@@ -93,7 +105,7 @@ Mon Père et al. (2026) derive the same thing analytically — growth rate is
 proportional to the difference between a clone's own fitness and the *average
 fitness of the population*. ([`OPEN_PROBLEMS.md`](analysis/OPEN_PROBLEMS.md))
 
-### 7. Three independent methods agree once compared like for like
+### 8. Three independent methods agree once compared like for like
 
 | source | method | DNMT3A, per year |
 |---|---|---|
@@ -106,7 +118,7 @@ The phylogenetic estimate shares no machinery with a frequency spectrum and
 lands with the spectrum fits. The longitudinal value is the outlier, low, by the
 amount stages E and F predict.
 
-### 8. TET2 clones are still growing after 75; DNMT3A clones are not
+### 9. TET2 clones are still growing after 75; DNMT3A clones are not
 
 234 trajectories, each clone split at its own midpoint so it serves as its own
 control:
@@ -144,6 +156,7 @@ that is easy to repeat.
 | a bootstrap variable reused by two sections | the number contradicting itself | P = 0.01 reported for a quantity that is 0.90 |
 | stage H reported without its power | planning a replication forced the calculation | 0.56, which downgrades a borderline positive |
 | reading the caller output instead of the cohort | a sanity check committed with the pre-registration | a spurious failed replication, caught before it was believed |
+| banding a ratio whose denominator has no inverse | a diagnostic table the write-up demanded | a 36-minute cluster run that could not have answered its own question |
 
 **The pattern underneath almost all of them:** before comparing two numbers,
 establish that they measure the same thing. Hotspot against gene average.
@@ -187,10 +200,10 @@ mechanism, and the model implements it through the Moran normalisation `W`.
    to 230 — twice Fabre, twenty-five times Lothian. A replication still matters
    more than anything else on this list; it needs a cohort that does not yet
    appear to exist in the open. ([`STAGE_I_LOTHIAN.md`](analysis/STAGE_I_LOTHIAN.md))
-2. **Fitting the model to trajectories rather than to the spectrum.** Fabre's
-   data has four to five timepoints per clone, which allows an inference this
-   project has never attempted, and which is expensive enough to justify the
-   cluster.
+2. ~~Fitting the model to trajectories rather than to the spectrum.~~ **Done,
+   and it does not work** — not for want of data, but because the trajectory
+   estimator is non-monotonic in `s` and therefore has no inverse.
+   ([`STAGE_J_FABRE_GRID.md`](analysis/STAGE_J_FABRE_GRID.md))
 3. **Phase.** Everything about multihit waits on it, and no amount of bulk
    sequencing supplies it.
 

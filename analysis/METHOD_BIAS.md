@@ -2,6 +2,9 @@
 
 Reproduce with `.venv/bin/python analysis/06_method_bias.py`.
 Figures `10_method_recovery.png` and `11_bias_decomposition.png`.
+Checked against the literature in
+[`METHOD_BIAS_LITERATURE.md`](METHOD_BIAS_LITERATURE.md), which corrected two
+claims below and left one open problem.
 
 ---
 
@@ -59,13 +62,22 @@ cells, detection limit VAF ≥ 0.0192, sequencing depth 1,000×.
 
 Three things in that table matter more than the numbers.
 
-**The ordering reproduces the published disagreement.** The spectrum fit
-recovers the truth; following clones for thirteen years from age 65 returns
-about 43% of it. Watson's number is higher than Fabre's, and Watson used the
-spectrum. Under these settings one underlying truth would be reported as a
-ratio near 2.4; the published ratio is 3.0. **Most of the gap is design, not
-biology** — but not all of it, and the remainder is the honest part of the
-answer.
+**The ordering reproduces the published disagreement, at the right size.**
+Fabre state the clean comparison in their own discussion: DNMT3A at **15.0%**
+per year from Watson's spectrum fit against **6.2%** per year from their
+follow-up — both gene-level, both DNMT3A. Ratio **2.42**. From design bias
+alone this experiment predicts **2.4**.
+
+> An earlier draft used R882H at 0.148 against Fabre's ~0.050, a ratio of 3.0.
+> That pair is not like for like — a per-variant hotspot against a gene-level
+> average — and Watson report that over 90% of nonsynonymous DNMT3A variants are
+> effectively neutral, so the gene average belongs well below the hotspot for
+> reasons unrelated to method. Corrected.
+
+The agreement is closer than three seeds and one mutation rate deserve; read it
+as consistency, not as a match. **Fabre reach the same place by another route**,
+attributing the slowdown to "an increasingly competitive oligoclonal landscape"
+— this model's competition term in words.
 
 **The longitudinal bias grows with fitness.** A clone cannot keep growing
 exponentially once it owns a large share of the marrow: the cells it competes
@@ -85,6 +97,19 @@ returns 0.019 at s = 0.08, rises to 0.033 in the middle, and falls back to
 0.017 at s = 0.24. A non-monotonic map has no inverse. One observed slope is
 compatible with several very different truths, and no amount of extra data
 fixes that.
+
+**But age is not the problem, and the claim stops here.** Watson run an
+age-based cross-check of their own: the prevalence of a variant at a fixed
+detection threshold, predicted to rise linearly at rate `2Ntμs`. It returns 14%
+per year against the 15% their spectrum fit gives. Same sampling design, same
+ages, a different functional of them, no detectable bias. What fails is this
+particular extraction — the slope of log(VAF) among **detected** clones — and
+it fails because it conditions on clearing the threshold. Prevalence counts the
+people who carry a variant instead, and escapes.
+
+We cannot borrow it: prevalence needs a screening denominator, and stage C
+established this dataset has none. The same missing column that made the
+mutation rate unidentifiable blocks the one age-based estimator that works.
 
 ---
 
@@ -128,6 +153,13 @@ to thirteen years of growth.
 
 **For the longitudinal design the dominant artifact is saturation.**
 Restricting to clones below VAF 0.05 recovers a quarter of the missing signal.
+
+> This decomposition works **only** because `s` is held fixed across every clone
+> in the simulation. The same stratification on real data means something else:
+> size correlates with fitness there, so small clones are also the less fit
+> ones. Published work finds micro-CH (VAF 0.5–2%) growing *slower* than CHIP
+> (VAF ≥ 2%), the opposite direction — which is what confounding by fitness
+> looks like, not evidence against saturation.
 
 **Nothing brings either design all the way back.** Even with every artifact
 off, the regression returns 0.097 against a truth of 0.14. The residual is
@@ -223,3 +255,22 @@ window.
   cannot see, because the model has no such effect to recover.
 - **One cohort per simulation.** As section 4 shows, this is exactly what keeps
   the model from reproducing the full real-data effect.
+
+## The two open problems the literature check raised
+
+**A third method disagrees, and this experiment cannot adjudicate.** Mitchell
+2022 reconstructs clonal histories from phylogenies — machinery shared with
+neither VAF spectra nor serial sampling — and reports DNMT3A at ~5% per year.
+That sides with Fabre, not with the spectrum. Stage E validated the spectrum
+fit against a grid produced by our own model, so an upward bias present in real
+data but absent from the simulator is invisible here by construction. Settling
+it needs all three methods restricted to one variant class.
+
+**Fast drivers should decelerate most, and are reported to decelerate least.**
+Our model makes the saturation bias grow with `s`: at s = 0.24 thirteen years
+of follow-up recover almost nothing. Fabre find the opposite ordering —
+deceleration "most marked" for DNMT3A, BRCC3 and TP53, and "almost no
+deceleration" in fast drivers like U2AF1, SRSF2 P95H and IDH1. Either those
+clones were still small through the window, or our competition term saturates
+too early. This is directly testable on our own simulated fast drivers and has
+not been tested.

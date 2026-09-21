@@ -77,6 +77,11 @@ FOLLOWUP   = 13.0        # Fabre's median follow-up
 CROSS_AGES = [50., 55., 60., 65., 70., 75., 80., 85.]
 ABC_AGE    = 70.0
 QUANTILES  = [0.10, 0.25, 0.50, 0.75, 0.90]
+
+# The published pair for DNMT3A, gene-level on both sides, as quoted by Fabre
+# 2022 in their own discussion. See analysis/METHOD_BIAS_LITERATURE.md.
+WATSON_DNMT3A = 0.150      # spectrum fit, Watson et al. 2020
+FABRE_DNMT3A  = 0.062      # longitudinal follow-up, Fabre et al. 2022
 QCOLS      = ["vaf_q10", "vaf_q25", "vaf_q50", "vaf_q75", "vaf_q90"]
 
 OBS_CSV = (ROOT / "reference/data/watson2020/Maximum_likelihood_estimations"
@@ -387,17 +392,28 @@ print(f"""Averaged over the five true values, as a fraction of the truth recover
   longitudinal per-clone rate  {l*100:>5.0f}%
   ABC on the VAF spectrum      {a*100:>5.0f}%
 
-THE ORDER OF THOSE THREE IS THE RESULT. Watson 2020 reports 0.148 for DNMT3A
-R882 and Fabre 2022 reports 0.050 for the same gene, a ratio of {0.148/0.050:.1f}, and the
-higher number comes from the spectrum fit while the lower comes from following
-clones. That is the direction this experiment produces: the spectrum recovers
-the truth, and following clones for thirteen years from age {BASELINE:.0f} returns roughly
-{l*100:.0f}% of it. Under these settings the two designs would report a ratio near
-{a/l:.1f} from ONE underlying truth, against the {0.148/0.050:.1f} actually published.
+THE ORDER OF THOSE THREE IS THE RESULT, and the published gap is the right
+size. Fabre 2022 put the clean comparison in their own discussion: DNMT3A
+clones at {WATSON_DNMT3A:.3f} per year from Watson's spectrum fit against {FABRE_DNMT3A:.3f} per year
+from their own follow-up — both gene-level, both DNMT3A, a ratio of
+{WATSON_DNMT3A/FABRE_DNMT3A:.2f}. From design bias alone this experiment predicts {a/l:.1f}.
 
-So most of the published gap is a property of the designs, not a disagreement
-about biology — but not all of it, and the residual is the honest part of the
-answer rather than a rounding error.
+(Stage D compared R882H at 0.148 against Fabre's ~0.050 instead, a ratio of 3.0.
+That pair is not like for like: a per-variant hotspot against a gene-level
+average. Watson report that over 90% of nonsynonymous DNMT3A variants are
+effectively neutral, so a gene average over that mixture belongs well below the
+hotspot value for reasons that have nothing to do with method.)
+
+The agreement is closer than three seeds and one mutation rate deserve, and
+should be read as consistency rather than a match. But it is the right size, on
+the right pair, in the right direction.
+
+Fabre reach the same place by another route: they read the gap as DNMT3A clones
+genuinely growing faster early in life, and attribute the slowdown to "an
+increasingly competitive oligoclonal landscape". That is this model's
+competition term in words. The two readings agree on the mechanism. A clone
+whose growth slowed because the niche filled has not lost fitness, and calling
+its late-window rate "fitness" is the error.
 
 WHY LONGITUDINAL COMES OUT LOW, AND WHY IT GETS WORSE WITH s
 A clone cannot keep growing exponentially once it owns a large share of the
@@ -481,7 +497,7 @@ model reproduces at about {cross_rows[3][1]/cross_rows[0][1]:.1f}, and a composi
 not contain because it was never given more than one cohort. Both are
 artifacts of measurement. Neither is biology.
 
-THE CONSEQUENCE, STATED PLAINLY
+THE CONSEQUENCE, AND ITS LIMIT
 A slope of log(VAF) against age is not an estimate of a selection coefficient.
 It depends on the detection limit, on which cohorts were pooled, and on how fit
 the clones are — non-monotonically, as experiment 1 shows: {agg.cross.iloc[0]:.3f} at s={agg.s_true.iloc[0]:.2f},
@@ -491,7 +507,24 @@ several very different truths, and no amount of extra data fixes that.
 
 Stage 1's {deep_slope:.4f} and stage D's ~0.13 were therefore never in conflict. They are
 the same population read with two instruments, one of which does not measure
-what its units suggest.""")
+what its units suggest.
+
+The claim stops there, and not one step further. AGE IS NOT THE PROBLEM. Watson
+run an age-based cross-check of their own — the prevalence of a variant at a
+fixed detection threshold, which their model predicts rises linearly at rate
+2*N*t*mu*s — and it returns 14% per year against the 15% their spectrum fit
+gives. Same sampling design, same ages, a different functional of them, and no
+detectable bias.
+
+What fails is this particular extraction: the slope of log(VAF) among DETECTED
+clones. The prevalence slope survives because it does not condition on the
+clones that cleared the threshold; it counts the people who have one.
+
+And we cannot borrow it. Prevalence needs a screening denominator — how many
+people were tested in each age band, not how many carried a variant. Stage C
+established that this dataset has none, which is why the mutation rate came out
+unidentifiable. The same missing column blocks the one age-based estimator that
+would have worked.""")
 
 # =================================================================== figures
 section("6. FIGURES")

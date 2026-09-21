@@ -88,10 +88,15 @@ smaller than what 52 variants can resolve.
 simulated cohort whose fitness is known by construction, a fit to the VAF
 spectrum recovers 103% of the truth, following clones for thirteen years
 recovers 43%, and regressing log(VAF) on the host's age recovers 18%. The
-ordering reproduces the direction of the published disagreement: Watson used
-the spectrum, Fabre followed clones. A large clone genuinely grows more slowly
-than its fitness, so follow-up measures realised growth rather than fitness
-from birth — and the gap widens the fitter the clone is.
+ordering reproduces the published disagreement at the right size: for DNMT3A,
+Watson's spectrum fit gives 15.0% per year and Fabre's follow-up 6.2%, a ratio
+of 2.42 against the 2.4 predicted from design bias alone. A large clone
+genuinely grows more slowly than its fitness, so follow-up measures realised
+growth rather than fitness from birth. Fabre attribute the same slowdown to "an
+increasingly competitive oligoclonal landscape" — this model's competition term
+in words. A third method disagrees: phylogenetic reconstruction puts DNMT3A near
+5% per year, and stage E cannot adjudicate that, because it validated the
+spectrum fit against a grid produced by the same model.
 
 **The slope of log(VAF) against age has no inverse.** Across true values from
 0.08 to 0.24 it rises and then falls, so one observed slope is compatible with
@@ -107,7 +112,9 @@ with the corrected value improved the fit 2.4-fold and moved s from 0.10 to
 0.13 per year — into the range of published per-variant estimates.
 
 See [`analysis/METHOD_BIAS.md`](analysis/METHOD_BIAS.md) for the study-design
-experiment, [`analysis/FINDINGS.md`](analysis/FINDINGS.md) for the exploration,
+experiment and
+[`analysis/METHOD_BIAS_LITERATURE.md`](analysis/METHOD_BIAS_LITERATURE.md) for
+what checking it against the papers corrected, [`analysis/FINDINGS.md`](analysis/FINDINGS.md) for the exploration,
 [`analysis/LITERATURE_REVIEW.md`](analysis/LITERATURE_REVIEW.md) for what the
 papers changed, and [`reference/README.md`](reference/README.md) for data
 provenance.

@@ -27,7 +27,7 @@ The public data agrees: age explains only 9% of the variance in clone size
 | Reference survey | inventory public code and data | **done** |
 | Exploration | establish what the data can answer | **done** |
 | **A** — minimal model | Moran process with selection, validated analytically | **done** |
-| B — realistic model | multiple clones, continuous mutation influx | planned |
+| **B** — realistic model | multiple clones, continuous mutation influx | **done** |
 | C — parameter sweep | ABC inference on an HPC cluster | planned |
 | D — confrontation | compare against observed VAF distributions | planned |
 
@@ -44,7 +44,8 @@ reference/    third-party code and data (not versioned)
 ```bash
 uv venv && uv pip install pandas matplotlib scipy
 .venv/bin/python analysis/01_exploration.py    # explore the public data
-.venv/bin/python analysis/02_validation.py     # validate the simulator
+.venv/bin/python analysis/02_validation.py     # validate the single-clone model
+.venv/bin/python analysis/03_multiclone.py     # many clones, VAF distributions
 ```
 
 ## Key results so far
@@ -56,6 +57,12 @@ sizes and starting points — all within 3 standard errors.
 **The Moran approximation is s/(1+s), not 2s.** The widely quoted "2s" rule
 comes from the Wright-Fisher model, which has a different offspring variance.
 Using the wrong one would double every fitness estimate.
+
+**Exact beats approximate, and is faster here.** The multi-clone model first
+used tau-leaping, which let a one-cell clone die and give birth in the same
+time slice and inflated survival by 3 standard errors. Sampling the
+birth-death transition exactly removed the bias and allowed a time step five
+times larger.
 
 **Fitness is per variant, not global.** In the public data TET2 clones grow
 about twice as fast as DNMT3A ones, and within DNMT3A the R882 hotspot

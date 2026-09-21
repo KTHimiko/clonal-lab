@@ -1,0 +1,13 @@
+# material de terceiros: clonado ou baixado, nunca versionado aqui
+referencia/codigo/
+referencia/dados/
+
+# saidas de simulacao
+resultados/
+work/
+*.sif
+
+# ruido
+__pycache__/
+*.pyc
+.Rhistory

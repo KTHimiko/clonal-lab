@@ -11,3 +11,6 @@ work/
 __pycache__/
 *.pyc
 .Rhistory
+
+# ambiente virtual
+.venv/

@@ -90,6 +90,45 @@ Other relevant folders in the same collection:
 | `Age_prevalence_of_DNMT3A_R882H_and_R882C_variants` | raw cohorts: McKerrel (112 rows with VAF and age) and Coombs (1,591 clinical samples) |
 | `Estimating_fitness_effects_of_infrequently_mutated_sites` | per-site fitness effects |
 
+### Fabre 2022 (CC BY 4.0) — `data/fabre2022/`
+
+Added in stage F. This is the dataset that carries what the Watson table does
+not: **a person identifier and repeated measurements**, which is what makes
+stages F, G and H possible at all.
+
+**`ALLvariants_exclSynonymous_Xadj.txt`** — tab separated.
+
+```
+SardID	Gender	Phase	Age	Gene	CHR	START	END	REF	ALT	MUTcount_Xadj	WTcount	TOTALcount	VAF	Type	AAChange.refGene
+260	M	1	61.02	ASXL1	20	31023231	31023231	G	T	2	1578	1580	0.0013	stopgain	...
+```
+
+| | |
+|---|---|
+| Rows | 4,287 measurements |
+| People | 394 |
+| Distinct clones | 994 |
+| Timepoints | 2 to 5 per person |
+| Follow-up | median 12.9 years, max 16.1 |
+| Ages | 55 to 105 |
+| Depth | median 1,140x |
+| Main genes | TET2 (950), DNMT3A (818), SF3B1 (171), PPM1D (164), TP53 (161), ASXL1 (151), CBL (108), BCORL1 (95) |
+| Cohort | SardiNIA, a founder population from Sardinia |
+
+`TOTALcount` is the column that made stages G and H possible: read depth per
+measurement, so the uncertainty on every VAF can be computed rather than assumed.
+
+Downloaded with:
+
+```bash
+curl -sL "https://api.figshare.com/v2/articles/15029118"   # lists the files
+# then fetch download_url for each name wanted; the whole deposit is 5.3 MB
+```
+
+**Only the derived variant table is used.** The raw sequencing sits in the
+European Genome–phenome Archive under controlled access (EGAD00001007682/3/4)
+and was neither requested nor used.
+
 ### Mitchell 2022 (CC BY 4.0) — `data/mitchell2022/`
 
 The full Mendeley package holds **53 files and 5.15 GB uncompressed**, almost
@@ -122,6 +161,25 @@ cells.
 
 *The Dryad API answers `Unauthorized, must have current bearer token` and the
 direct endpoint returns 403. Only the page's "Download dataset" button works.*
+
+### Fabre et al. 2022 — data
+
+**The longitudinal dynamics and natural history of clonal haematopoiesis**,
+*Nature* 606:335–342. Followed 697 clones in the same people for a median of 13
+years, and is the source of the longitudinal fitness estimates stages E and F
+argue with.
+
+- Data: <https://doi.org/10.6084/m9.figshare.15029118> — **CC BY 4.0**, no
+  access application, 5.3 MB
+- Analysis code: <https://github.com/josegcpa/clonal_dynamics>
+- Simulator used by that code: <https://github.com/josegcpa/clonex>
+  (Wright–Fisher, per-generation `s`, `gen_per_year = 13`)
+- Open access paper: <https://pmc.ncbi.nlm.nih.gov/articles/PMC9177423/>
+
+*Their repository contains `investigate_simulations_early_late.R` and
+`investigate_simulations_competition.R`, which test their own estimator against
+simulation. Read in stage E's literature check; the overlap with our design
+comparison is adjacent rather than direct.*
 
 ### Mitchell et al. 2022 — data matrices
 

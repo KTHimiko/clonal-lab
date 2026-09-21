@@ -5,9 +5,16 @@ against public data on clonal haematopoiesis.
 
 As we age, somatic mutations let some blood stem cells outcompete their
 neighbours. The resulting clonal expansions — **clonal haematopoiesis** — are
-common after 60 and roughly double cardiovascular risk. This project asks how
-strong those fitness advantages are, by simulating the competition and fitting
-the simulation to what is measured in people.
+common after 60 and roughly double cardiovascular risk.
+
+The project set out to ask how strong those fitness advantages are. It ended up
+asking something more useful: **how much to trust each way of measuring them.**
+Published estimates for the same gene differ by up to a factor of three, and no
+dataset can say which is right — but a simulator whose answer is known by
+construction can, and a cohort measured repeatedly can check it.
+
+**Start with [`SYNTHESIS.md`](SYNTHESIS.md)**: every result, every correction,
+and every question the data could not answer, in one read.
 
 ## Why simulation
 
@@ -63,115 +70,47 @@ nextflow run pipeline/sweep.nf -profile slurm  # the grid, on a cluster
 .venv/bin/python analysis/11_multihit.py       # two hits in one cell, or two clones?
 .venv/bin/python analysis/12_tet2_longitudinal.py  # TET2 and age, within clone
 ```
+## What it found
 
-## Key results so far
+**The full account is in [`SYNTHESIS.md`](SYNTHESIS.md)** — every result, every
+correction, and every question the data could not answer, in one read. The
+per-stage documents in [`analysis/`](analysis/) hold the detail.
 
-**The simulator is correct.** It reproduces the exact Moran fixation
-probability in the neutral case and under selection, across several population
-sizes and starting points — all within 3 standard errors.
+The short version:
 
-**The Moran approximation is s/(1+s), not 2s.** The widely quoted "2s" rule
-comes from the Wright-Fisher model, which has a different offspring variance.
-Using the wrong one would double every fitness estimate.
+**Study designs do not measure the same thing.** Against a simulated cohort
+whose fitness is known by construction, a fit to the VAF spectrum recovers 103%
+of the truth, thirteen years of follow-up recovers 43%, and regressing log(VAF)
+on the host's age recovers 18% — and that last one is non-monotonic in `s`, so it
+has no inverse at all.
 
-**Exact beats approximate, and is faster here.** The multi-clone model first
-used tau-leaping, which let a one-cell clone die and give birth in the same
-time slice and inflated survival by 3 standard errors. Sampling the
-birth-death transition exactly removed the bias and allowed a time step five
-times larger.
+**The ordering holds in 394 real people.** Fabre's cohort allows all three
+designs on the same individuals: 0.110, 0.0455 and 0.0024 per year. Spectrum ÷
+longitudinal is 2.42 observed against 2.40 predicted, and 2.42 between the two
+published papers.
 
-**Fitness is identifiable from this data; the mutation rate is not.** A 180-point
-grid scored by approximate Bayesian computation puts the selection coefficient
-at s = 0.13 per year, with every accepted point at the same value. The mutation
-rate stays spread over 91% of the grid. The distance surface shows why: a
-vertical ridge running across all mutation rates. Shape responds to
-fitness; counts respond to mutation rate, and counts cannot be computed without
-a screening denominator the data does not carry.
+**One result needs no model.** In 770 real trajectories, restricting to clones
+already detectable at enrolment drops the measured growth rate from 0.0703 to
+0.0455 per year — a 35% loss, with non-overlapping intervals. A study that
+enrols the clones it can already see is measuring the ones that have most nearly
+finished growing.
 
-**Fitness is per variant, but this dataset resolves only part of it.** Fitting
-each variant class separately gives DNMT3A R882 at 0.130, TET2 at 0.130 and
-other DNMT3A variants at 0.120 per year. Bootstrapping the observed variants
-shows only one of the three pairwise differences survives the sample size:
-TET2 above non-hotspot DNMT3A. The R882 advantage, real in the literature, is
-smaller than what 52 variants can resolve.
+**Clones slow because the marrow fills.** Per-clone deceleration is explained by
+the carrier's total clonal burden growth (R² = 0.956), not by the clone's own
+fitness (R² = 0.003). Mon Père et al. derive the same relation analytically.
 
-**Two published methods measure different quantities, and it shows.** Given a
-simulated cohort whose fitness is known by construction, a fit to the VAF
-spectrum recovers 103% of the truth, following clones for thirteen years
-recovers 43%, and regressing log(VAF) on the host's age recovers 18%. The
-ordering reproduces the published disagreement at the right size: for DNMT3A,
-Watson's spectrum fit gives 15.0% per year and Fabre's follow-up 6.2%, a ratio
-of 2.42 against the 2.4 predicted from design bias alone. A large clone
-genuinely grows more slowly than its fitness, so follow-up measures realised
-growth rather than fitness from birth. Fabre attribute the same slowdown to "an
-increasingly competitive oligoclonal landscape" — this model's competition term
-in words. A third, independent method agrees: Mitchell's per-clone phylogenetic
-estimates put DNMT3A clades at 0.167–0.200 per year, using coalescence patterns
-rather than a frequency spectrum. Three detection-conditioned methods land
-between 0.11 and 0.20; the longitudinal estimate is the outlier at 0.062.
+**Three independent methods agree once compared like for like.** Spectrum fits
+and phylogenetic reconstruction both put DNMT3A between 0.11 and 0.20 per year;
+the longitudinal estimate is the outlier at 0.062, low by the predicted amount.
 
-**The slope of log(VAF) against age has no inverse.** Across true values from
-0.08 to 0.24 it rises and then falls, so one observed slope is compatible with
-several very different truths. In the real data, moving only the detection
-floor — same cohorts, same variants — changes it by a factor of 4.1. Stage 1's
-0.048 and stage D's 0.13 were never in conflict; they are two instruments, one
-of which does not measure what its units suggest.
+**TET2 clones are still growing after 75; DNMT3A clones are not.** 234
+trajectories, each clone its own control. The between-gene comparison is
+borderline and three measures were tested — both recorded rather than hidden.
 
-**The design gap is real, and measurable without a model.** Fabre's SardiNIA
-cohort — 394 people, 994 clones, up to five timepoints each — allows all three
-designs on the same individuals. Enrolling clones by detectability drops the
-measured growth rate from 0.0703 to 0.0455 per year across 770 real
-trajectories, with non-overlapping intervals: a 35% loss, no simulation
-involved. The spectrum fit and longitudinal follow-up differ by a factor of 2.42
-in these people, against 2.40 predicted from simulation and 2.42 between the two
-published papers. The age regression does worse than predicted — effectively
-zero, with an interval spanning zero — and moving only the detection floor
-changes it by a factor of 11.
-
-**TET2 clones are still growing after 75; DNMT3A clones are not.** Splitting 234
-trajectories at their own midpoint, so each clone is its own control, DNMT3A's
-late-half growth rate is 0.0096 per year with an interval spanning zero while
-TET2's is 0.0401 with an interval that excludes it. Every gene decelerates, as
-clonal interference predicts. The between-gene comparison is borderline — the
-one-sided P is 0.968 and the two-sided interval grazes zero — and three related
-measures were tested, which is recorded rather than hidden.
-
-**The earlier cross-sectional attempt found nothing, and could not have.** Fabre
-report TET2 clones growing faster in older people. Pooled across cohorts this
-dataset appears to agree — the gap against DNMT3A reaches P = 0.948 once the
-detection floor is dropped — but stratifying by cohort collapses the estimate by
-87%, because TET2 is over-represented in the older cohorts and absent from one
-entirely. Simulating two worlds calibrated to be identical at age 70 shows that
-36 variants could call a real 3%/yr ramp correctly only 79% of the time, and the
-data achieved 0.757. **It is performing at the ceiling its size allows.** About
-300 variants would be needed. A deeper point survives the arithmetic: in a
-relative-fitness model, "TET2 improves" and "everyone else degrades while TET2 is
-protected" are the same model, and separating them needs an absolute measurement
-of wild-type output that no observational cohort provides.
-
-**The estimate was checked against the literature, and a parameter was wrong.**
-Reading Watson 2020, Mitchell 2022 and Fabre 2022 showed that two independent
-methods put the stem-cell population size at twice our initial guess. Re-running
-with the corrected value improved the fit 2.4-fold and moved s from 0.10 to
-0.13 per year — into the range of published per-variant estimates.
-
-See [`analysis/METHOD_BIAS.md`](analysis/METHOD_BIAS.md) for the study-design
-experiment and
-[`analysis/METHOD_BIAS_LITERATURE.md`](analysis/METHOD_BIAS_LITERATURE.md) and
-[`analysis/OPEN_PROBLEMS.md`](analysis/OPEN_PROBLEMS.md) for what checking it
-against the papers corrected,
-[`analysis/TET2_AGE.md`](analysis/TET2_AGE.md) for the age-dependence question,
-[`analysis/STAGE_F_REAL_COHORT.md`](analysis/STAGE_F_REAL_COHORT.md) for the
-same designs run on a real cohort,
-[`analysis/MULTIHIT.md`](analysis/MULTIHIT.md) for why bulk sequencing cannot
-answer a phasing question,
-[`analysis/TET2_LONGITUDINAL.md`](analysis/TET2_LONGITUDINAL.md) for TET2 tested
-with each clone as its own control,
-[`analysis/LITERATURE_E_RESULTS.md`](analysis/LITERATURE_E_RESULTS.md) for what
-the papers say about each of those results, [`analysis/FINDINGS.md`](analysis/FINDINGS.md) for the exploration,
-[`analysis/LITERATURE_REVIEW.md`](analysis/LITERATURE_REVIEW.md) for what the
-papers changed, and [`reference/README.md`](reference/README.md) for data
-provenance.
+**And four questions could not be answered**, each on a different missing column:
+the mutation rate and the one unbiased age-based estimator both need a screening
+denominator; the cross-sectional TET2 test had a power ceiling of 0.79; and
+multihit needs phase, which bulk sequencing does not measure.
 
 ## Data
 

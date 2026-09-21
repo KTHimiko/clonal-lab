@@ -61,16 +61,35 @@ QCOLS = ["vaf_q10", "vaf_q25", "vaf_q50", "vaf_q75", "vaf_q90"]
 QUANTILES = [0.10, 0.25, 0.50, 0.75, 0.90]
 ACCEPT = 0.05
 
-# Published values, for checking against. Watson is per variant from a
-# cross-sectional VAF spectrum; Fabre is per gene from 697 clones followed in
-# the same people for a median of 13 years. They disagree, which is itself the
-# useful context: any estimate landing between them is defensible.
+# Published values, for checking against.
+#
+# CORRECTED AFTER STAGES E AND F. This table originally paired Watson's
+# per-variant hotspot values against Fabre's gene-level averages and asked
+# whether our estimate fell "between the two methods". That question is not
+# well posed, for two reasons found later:
+#
+#   1. The pairs were not like for like. Watson's 0.148 is DNMT3A R882H, a
+#      single hotspot; Fabre's ~0.050 is the whole gene, and Watson themselves
+#      report over 90% of nonsynonymous DNMT3A variants as effectively neutral.
+#      A gene average belongs far below a hotspot for reasons that have nothing
+#      to do with method. The comparable pair is gene-level on both sides:
+#      Watson 0.150 against Fabre 0.062.
+#   2. The two numbers are not two noisy readings of one quantity. Stage E
+#      measured a spectrum fit recovering ~100% of a known truth and a
+#      thirteen-year follow-up recovering ~43%, and stage F reproduced that
+#      ratio in 394 real people. "Between the two" is therefore not a target.
+#
+# See analysis/METHOD_BIAS_LITERATURE.md and analysis/STAGE_F_REAL_COHORT.md.
 PUBLISHED = {
-    "DNMT3A R882":  {"Watson 2020": 0.148, "Fabre 2022": 0.050},   # R882H
-    "DNMT3A other": {"Watson 2020": 0.120, "Fabre 2022": 0.050},   # non-hotspot median of top-20
-    "TET2":         {"Fabre 2022": 0.068},
+    "DNMT3A R882":  {"Watson 2020": 0.148, "Fabre 2022": None},    # R882H, hotspot only
+    "DNMT3A other": {"Watson 2020": 0.120, "Fabre 2022": None},    # non-hotspot median of top-20
+    "TET2":         {"Watson 2020": None,  "Fabre 2022": 0.068},   # Fabre is gene-level
     "JAK2":         {"Watson 2020": 0.146, "Fabre 2022": None},    # V617F
 }
+
+# The one pair that IS like for like, both gene-level.
+GENE_LEVEL = {"DNMT3A": {"Watson 2020 (spectrum)": 0.150,
+                         "Fabre 2022 (follow-up)": 0.062}}
 
 
 # ================================================================== observed
@@ -192,16 +211,29 @@ for k in classes:
     f = pub.get("Fabre 2022")
     ws = f"{w:.3f}" if w else "-"
     fs = f"{f:.3f}" if f else "-"
-    vals = [v for v in (w, f) if v]
-    if vals and min(vals) <= ours <= max(vals):
-        verdict = "between the two methods"
-    elif vals and ours > max(vals):
-        verdict = "above both"
-    elif vals and ours < min(vals):
-        verdict = "below both"
+    # No "between the two methods" verdict any more: see the note on PUBLISHED.
+    # Each published number is compared on its own, against a value measured the
+    # same way, or not at all.
+    if w and abs(ours - w) / w < 0.25:
+        verdict = "within 25% of the spectrum fit"
+    elif w:
+        verdict = f"{'above' if ours > w else 'below'} the spectrum fit"
+    elif f:
+        verdict = f"{'above' if ours > f else 'below'} the follow-up value"
     else:
-        verdict = "no published pair"
+        verdict = "no comparable published value"
     print(f"{k:<14}  {ours:>8.3f}  {ws:>12}  {fs:>11}   {verdict}")
+
+print(f"""
+Our estimates come from a VAF spectrum, so the row that means something is the
+comparison against Watson, who used the same family of estimator. Fabre's
+numbers are included for context and are NOT a target: stages E and F showed a
+thirteen-year follow-up recovers about 43% of what a spectrum fit does, both in
+simulation and in 394 real people.
+
+The one gene-level pair that is like for like:
+  DNMT3A, Watson spectrum fit {GENE_LEVEL['DNMT3A']['Watson 2020 (spectrum)']:.3f}   Fabre follow-up {GENE_LEVEL['DNMT3A']['Fabre 2022 (follow-up)']:.3f}
+  ratio {GENE_LEVEL['DNMT3A']['Watson 2020 (spectrum)'] / GENE_LEVEL['DNMT3A']['Fabre 2022 (follow-up)']:.2f}, against 2.42 measured on one cohort in stage F.""")
 
 
 # ============================================================== the ordering
@@ -233,10 +265,10 @@ for i, k in zip(y, classes):
     pub = PUBLISHED.get(k, {})
     if pub.get("Watson 2020"):
         ax.scatter([pub["Watson 2020"]], [i], s=90, marker="D", color=S2, zorder=3,
-                   label="Watson 2020 (cross-sectional)" if i == y[0] else None)
+                   label="Watson 2020 (VAF spectrum)" if i == y[0] else None)
     if pub.get("Fabre 2022"):
         ax.scatter([pub["Fabre 2022"]], [i], s=90, marker="^", color=S3, zorder=3,
-                   label="Fabre 2022 (longitudinal)" if i == y[0] else None)
+                   label="Fabre 2022 (follow-up, not a target)" if i == y[0] else None)
 
 ax.set_yticks(y)
 ax.set_yticklabels([f"{k}\n(n={results[k]['n']})" for k in classes])
@@ -250,7 +282,16 @@ print("  09_per_variant.png")
 
 
 section("6. WHAT TO MAKE OF IT")
-print("""The published methods disagree with each other by up to threefold on the
+print("""NOTE, ADDED AFTER STAGES E AND F. The paragraph below is what this stage
+originally concluded, and it is wrong in a way worth leaving visible: it treats
+the two published methods as two noisy readings of one quantity, so that landing
+between them counts as success. They are not. A spectrum fit recovers nearly all
+of a known truth and a thirteen-year follow-up recovers about 43% of it, in
+simulation and in 394 real people. The right target is the spectrum fit alone.
+
+The original text:
+
+The published methods disagree with each other by up to threefold on the
 same gene, so 'correct' is not a single number here. An estimate that sits
 between a cross-sectional and a longitudinal measurement of the same thing is
 consistent with both, and one that sits outside both would be a signal that

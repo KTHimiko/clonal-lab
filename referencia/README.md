@@ -105,11 +105,11 @@ do conteúdo só é necessário se um dia formos para reconstrução filogenéti
 
 ---
 
-## O que exige download manual
+## Proveniência — de onde vieram
 
-Estas fontes exigem navegador. Tentativas programáticas esbarram em
-autenticação ou proteção contra robô — documentado aqui para não repetir o
-esforço.
+Ambas exigem navegador: tentativas programáticas esbarram em autenticação ou
+proteção contra robô. Registrado aqui para não repetir o esforço se for
+preciso rebaixar.
 
 ### Watson et al. 2020 — dados
 
@@ -120,22 +120,20 @@ hematopoiéticas.
 
 - Dados: <https://doi.org/10.5061/dryad.83bk3j9mw> — **licença CC0**
   (domínio público, uso irrestrito)
-- Arquivo: `Age_prevalence_of_DNMT3A_R882H_and_R882C_variants.zip`, 57 KB
+- Baixado: `doi_10_5061_dryad_83bk3j9mw__v20200327.zip`, 566 KB, contendo
+  oito zips aninhados
 - Artigo (PDF aberto):
   <https://web.stanford.edu/group/dsfisher/papers/pdf/watson_et_al_2020.pdf>
 
 *A API do Dryad responde `Unauthorized, must have current bearer token` e o
-endpoint direto devolve 403. Baixe pela página.*
-
-Salve em `dados/watson2020/`.
+endpoint direto devolve 403. Só sai pelo botão "Download dataset" da página.*
 
 ### Mitchell et al. 2022 — matrizes de dados
 
 - Mendeley Data: <https://data.mendeley.com/datasets/np54zjkvxr/1>
+- Baixado: `np54zjkvxr-1.zip`, 4,6 GB
 - Dados brutos de sequenciamento: EGA, acesso **controlado** (EGAD00001007851)
   — fora do nosso escopo, exige aprovação institucional
-
-Salve em `dados/mitchell2022/`.
 
 ---
 

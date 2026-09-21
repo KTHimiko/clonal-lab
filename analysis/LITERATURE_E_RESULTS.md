@@ -198,18 +198,52 @@ narrow version is the honest one.
 application: only the raw sequencing sits behind the EGA. Their results either
 corroborate the 43% figure or correct it, and there is no reason to guess which.
 
-### One thing to check before anything else
+### The units question, asked and answered
 
-They simulate with `clonex`, a **Fisher–Wright** implementation. This project is
-a **Moran** process, and stage A established that the two define fitness
-differently — fixation goes as `s/(1+s)` under Moran and approximately `2s` under
-Wright–Fisher, because the offspring variance differs. A selection coefficient
-is not a portable number across those two conventions.
+**Checked, and the concern was aimed at the wrong quantity.** Run
+`analysis/09_units_check.py`.
 
-So part of the gap between Watson's 15.0% and Fabre's 6.2% may be definitional
-rather than methodological. This has not been checked, it is cheap to check, and
-if it is true it changes the headline of stage E. **It should be the first thing
-done, before any new modelling.**
+Fabre validate their fitting with `clonex`, a Wright–Fisher simulator whose `s`
+is a per-generation selective advantage, while this project is a Moran process —
+and stage A established the two conventions differ, fixation going as `s/(1+s)`
+against roughly `2s`. If the published numbers inherited that, part of the gap
+would be definitional and stage E's headline would be wrong.
+
+They do not, for three reasons:
+
+1. **Watson define their `s` in words, and it is a growth rate.** "a fitness
+   effect, s, which is *the average growth rate per year* of that variant
+   relative to the average growth rate", and "growing exponentially at rate s
+   per year."
+2. **Fabre fit growth rates per year to real trajectories in real years.**
+   `clonex` appears in their repository to validate that the fitting recovers a
+   known truth; its per-generation `s` is internal to that validation and does
+   not set the units of what they report.
+3. **Ours is the same thing, measured rather than assumed.** For a linear
+   birth-death process `E[size(t)] = exp(r·t)` exactly, over every lineage
+   including the extinct ones. Seeding one clone at birth and measuring between
+   ages 10 and 40 gives a ratio of measured rate to given `s` of 0.993 to 0.996
+   for s ≤ 0.13.
+
+The `s/(1+s)` versus `2s` distinction is about **fixation probability** — the
+chance a single mutant escapes drift — and arises from offspring variance. The
+growth rate of a clone that has already escaped drift is a different quantity
+and is unaffected. Neither published headline is a fixation probability, so the
+factor never enters.
+
+**Stage E's comparison stands.**
+
+### And an unplanned result from the same numbers
+
+The ratio is not constant. It holds at ~1 up to s = 0.13 and falls to 0.949 at
+s = 0.20 and **0.744** at s = 0.30.
+
+By age 40 a clone with s = 0.30 averages 16,175 cells out of 100,000 and is
+already realising only three-quarters of its nominal fitness — before any study
+would have begun following it. That is clonal interference reached by a route
+with no detection step at all, from a clone seeded at birth, so it cannot be an
+artifact of how clones were selected for measurement. It is an independent
+confirmation of the stage E mechanism.
 
 ## What this changes in the project
 
@@ -225,9 +259,9 @@ done, before any new modelling.**
 **Next, in order of expected value**
 
 3. **Read Fabre's simulation notebooks and pull their figshare data.** Free, no
-   application, and it directly tests the centrepiece result. Start by checking
-   whether their `s` is a Wright–Fisher coefficient, which would make part of
-   the published gap definitional.
+   application, and it directly tests the centrepiece result. The units question
+   is already settled — see above — so this goes straight to comparing their
+   early-versus-late and competition experiments against ours.
 4. **Test the multihit hypothesis — which needs data we do not have.** The
    question is whether TET2 variants co-occur with a second driver more often in
    older carriers. It cannot be asked of the Watson table, which has no person

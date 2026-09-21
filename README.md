@@ -34,6 +34,7 @@ The public data agrees: age explains only 9% of the variance in clone size
 | **E2** — open problems | checked against the literature and a third method | **done** |
 | **E3** — TET2 and age | can this data constrain age-dependent fitness? | **done** |
 | **F** — real cohort | the same three designs on 394 real people | **done** |
+| **G** — multihit | can bulk VAF separate two hits in one cell from two clones? | **done** |
 
 ## Layout
 
@@ -58,6 +59,7 @@ nextflow run pipeline/sweep.nf -profile slurm  # the grid, on a cluster
 .venv/bin/python analysis/08_tet2_age.py       # can the data see age-dependent fitness?
 .venv/bin/python analysis/09_units_check.py    # is s the same quantity everywhere?
 .venv/bin/python analysis/10_real_design_gap.py # the three designs on a real cohort
+.venv/bin/python analysis/11_multihit.py       # two hits in one cell, or two clones?
 ```
 
 ## Key results so far
@@ -151,6 +153,8 @@ against the papers corrected,
 [`analysis/TET2_AGE.md`](analysis/TET2_AGE.md) for the age-dependence question,
 [`analysis/STAGE_F_REAL_COHORT.md`](analysis/STAGE_F_REAL_COHORT.md) for the
 same designs run on a real cohort,
+[`analysis/MULTIHIT.md`](analysis/MULTIHIT.md) for why bulk sequencing cannot
+answer a phasing question,
 [`analysis/LITERATURE_E_RESULTS.md`](analysis/LITERATURE_E_RESULTS.md) for what
 the papers say about each of those results, [`analysis/FINDINGS.md`](analysis/FINDINGS.md) for the exploration,
 [`analysis/LITERATURE_REVIEW.md`](analysis/LITERATURE_REVIEW.md) for what the

@@ -30,6 +30,7 @@ The public data agrees: age explains only 9% of the variance in clone size
 | **B** — realistic model | multiple clones, continuous mutation influx | **done** |
 | **C** — parameter sweep | ABC inference on an HPC cluster | **done** |
 | **D** — per variant | fitness per variant class, with bootstrap | **done** |
+| **E** — method bias | which study design recovers a known truth | **done** |
 
 ## Layout
 
@@ -48,6 +49,8 @@ uv venv && uv pip install pandas matplotlib scipy
 .venv/bin/python analysis/03_multiclone.py     # many clones, VAF distributions
 nextflow run pipeline/sweep.nf -profile slurm  # the grid, on a cluster
 .venv/bin/python analysis/04_abc.py            # score the grid, get a posterior
+.venv/bin/python analysis/05_per_variant.py    # fitness per variant class
+.venv/bin/python analysis/06_method_bias.py    # what each study design recovers
 ```
 
 ## Key results so far
@@ -81,13 +84,30 @@ shows only one of the three pairwise differences survives the sample size:
 TET2 above non-hotspot DNMT3A. The R882 advantage, real in the literature, is
 smaller than what 52 variants can resolve.
 
+**Two published methods measure different quantities, and it shows.** Given a
+simulated cohort whose fitness is known by construction, a fit to the VAF
+spectrum recovers 103% of the truth, following clones for thirteen years
+recovers 43%, and regressing log(VAF) on the host's age recovers 18%. The
+ordering reproduces the direction of the published disagreement: Watson used
+the spectrum, Fabre followed clones. A large clone genuinely grows more slowly
+than its fitness, so follow-up measures realised growth rather than fitness
+from birth — and the gap widens the fitter the clone is.
+
+**The slope of log(VAF) against age has no inverse.** Across true values from
+0.08 to 0.24 it rises and then falls, so one observed slope is compatible with
+several very different truths. In the real data, moving only the detection
+floor — same cohorts, same variants — changes it by a factor of 4.1. Stage 1's
+0.048 and stage D's 0.13 were never in conflict; they are two instruments, one
+of which does not measure what its units suggest.
+
 **The estimate was checked against the literature, and a parameter was wrong.**
 Reading Watson 2020, Mitchell 2022 and Fabre 2022 showed that two independent
 methods put the stem-cell population size at twice our initial guess. Re-running
 with the corrected value improved the fit 2.4-fold and moved s from 0.10 to
 0.13 per year — into the range of published per-variant estimates.
 
-See [`analysis/FINDINGS.md`](analysis/FINDINGS.md) for the exploration,
+See [`analysis/METHOD_BIAS.md`](analysis/METHOD_BIAS.md) for the study-design
+experiment, [`analysis/FINDINGS.md`](analysis/FINDINGS.md) for the exploration,
 [`analysis/LITERATURE_REVIEW.md`](analysis/LITERATURE_REVIEW.md) for what the
 papers changed, and [`reference/README.md`](reference/README.md) for data
 provenance.

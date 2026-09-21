@@ -72,6 +72,15 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
     dict with
         'ages'      the ages snapshotted
         'sizes'     list of (people, max_clones) arrays, one per age
+        'births'    list of (people, max_clones) arrays, one per age, holding
+                    the age at which each live clone arose (NaN for empty
+                    slots). Two things need it. First, a clone's age is not
+                    its host's age, and telling those apart is the whole
+                    subject of stage E. Second, slots are recycled: a clone
+                    that dies frees its slot for a different clone, so
+                    following 'the clone in slot 7' across two snapshots
+                    without checking the birth time silently splices two
+                    different clones into one fake trajectory.
         'fitness'   (people, max_clones) array of each slot's s
         'overflow'  how many mutation events found no free slot
     """
@@ -80,13 +89,16 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
 
     sizes = np.zeros((people, max_clones), dtype=np.float64)
     fitness = np.zeros((people, max_clones), dtype=np.float64)
+    births = np.full((people, max_clones), np.nan, dtype=np.float64)
     overflow = 0
 
     if initial_clones:
         sizes[:, :initial_clones] = 1.0
         fitness[:, :initial_clones] = s
+        births[:, :initial_clones] = 0.0
 
-    snapshots, snap_at = [], list(np.sort(record_ages))
+    snapshots, birth_snaps = [], []
+    snap_at = list(np.sort(record_ages))
     steps = int(round(years / dt))
     new_clone_rate = N * mu * dt          # expected new clones per person per slice
 
@@ -151,6 +163,7 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
         extinct = sizes <= 0
         sizes[extinct] = 0.0
         fitness[extinct] = 0.0
+        births[extinct] = np.nan
 
         # --- new mutations --------------------------------------------------
         n_new = rng.poisson(new_clone_rate, size=people)
@@ -162,18 +175,21 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
                 slots = free[:take]
                 sizes[k, slots] = 1.0
                 fitness[k, slots] = s
+                births[k, slots] = t
 
         # --- snapshot --------------------------------------------------------
         while snap_at and t >= snap_at[0] - 1e-9:
             snapshots.append(sizes.copy())
+            birth_snaps.append(births.copy())
             snap_at.pop(0)
 
     while snap_at:                                   # ages beyond the run
         snapshots.append(sizes.copy())
+        birth_snaps.append(births.copy())
         snap_at.pop(0)
 
     return {"ages": np.sort(record_ages), "sizes": snapshots,
-            "fitness": fitness, "overflow": overflow}
+            "births": birth_snaps, "fitness": fitness, "overflow": overflow}
 
 
 def sizes_to_vaf(sizes, N):

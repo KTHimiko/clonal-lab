@@ -132,28 +132,57 @@ sim = np.log(sw[QCOLS].values)
 scale = sim.std(axis=0)
 scale[scale == 0] = 1.0
 
-results = {}
-for k in classes:
-    target = np.log(np.quantile(obs[obs.klass == k].VAF.values, QUANTILES))
+def best_s_for(values):
+    """The grid point whose VAF quantiles land closest to these observations."""
+    target = np.log(np.quantile(values, QUANTILES))
     d = np.sqrt((((sim - target) / scale) ** 2).mean(axis=1))
     grid = (sw.assign(distance=d)
               .groupby(["s", "mu"], as_index=False)
               .agg(distance=("distance", "mean")))
-    cut = np.quantile(grid.distance, ACCEPT)
-    acc = grid[grid.distance <= cut]
-    best = grid.loc[grid.distance.idxmin()]
-    results[k] = {"best_s": best.s, "distance": best.distance,
-                  "s_lo": acc.s.min(), "s_hi": acc.s.max(),
-                  "n": int((obs.klass == k).sum())}
+    row = grid.loc[grid.distance.idxmin()]
+    return row.s, row.distance, grid
+
+
+BOOTSTRAP = 400
+rng = np.random.default_rng(0)
+
+results = {}
+for k in classes:
+    vals = obs[obs.klass == k].VAF.values
+    best, dist, grid = best_s_for(vals)
+
+    # How much of the class difference survives the sample size? Each class
+    # holds between 36 and 153 variants. Resampling them with replacement and
+    # re-fitting shows how much the estimate moves for that reason alone —
+    # which is the difference between "we got two numbers" and "these two
+    # numbers differ".
+    boot = np.array([best_s_for(rng.choice(vals, size=vals.size, replace=True))[0]
+                     for _ in range(BOOTSTRAP)])
+
+    results[k] = {"best_s": best, "distance": dist,
+                  "s_lo": np.quantile(boot, 0.025),
+                  "s_hi": np.quantile(boot, 0.975),
+                  "boot": boot,
+                  "n": int(vals.size)}
 
 
 # ================================================================== results
 section("3. INFERRED FITNESS, CLASS BY CLASS")
-print(f"{'class':<14} {'n':>5}  {'s inferred':>11}  {'accepted range':>16}  {'distance':>9}")
+print(f"{'class':<14} {'n':>5}  {'s inferred':>11}  {'95% bootstrap':>17}  {'distance':>9}")
 for k in classes:
     r = results[k]
-    rng = f"{r['s_lo']:.3f} - {r['s_hi']:.3f}"
-    print(f"{k:<14} {r['n']:>5}  {r['best_s']:>11.3f}  {rng:>16}  {r['distance']:>9.4f}")
+    ci = f"{r['s_lo']:.3f} - {r['s_hi']:.3f}"
+    print(f"{k:<14} {r['n']:>5}  {r['best_s']:>11.3f}  {ci:>17}  {r['distance']:>9.4f}")
+
+print("\npairwise: does the difference survive resampling?")
+for i, a in enumerate(classes):
+    for b in classes[i+1:]:
+        diff = results[a]["boot"] - results[b]["boot"]
+        frac = float((diff > 0).mean())
+        gap = results[a]["best_s"] - results[b]["best_s"]
+        call = "separated" if frac > 0.95 or frac < 0.05 else "NOT separated"
+        print(f"  {a:<13} vs {b:<13}  gap {gap:+.3f}   "
+              f"P(first > second) = {frac:.2f}   {call}")
 
 print(f"\n{'class':<14}  {'ours':>8}  {'Watson 2020':>12}  {'Fabre 2022':>11}   verdict")
 for k in classes:
@@ -197,7 +226,8 @@ y = np.arange(len(classes))[::-1]
 for i, k in zip(y, classes):
     r = results[k]
     ax.plot([r["s_lo"], r["s_hi"]], [i, i], color=BASE, linewidth=6,
-            solid_capstyle="round", zorder=1)
+            solid_capstyle="round", zorder=1,
+            label="95% bootstrap" if i == y[0] else None)
     ax.scatter([r["best_s"]], [i], s=110, color=S1, zorder=3,
                label="this work" if i == y[0] else None)
     pub = PUBLISHED.get(k, {})

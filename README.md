@@ -29,7 +29,7 @@ The public data agrees: age explains only 9% of the variance in clone size
 | **A** — minimal model | Moran process with selection, validated analytically | **done** |
 | **B** — realistic model | multiple clones, continuous mutation influx | **done** |
 | **C** — parameter sweep | ABC inference on an HPC cluster | **done** |
-| D — confrontation | compare against observed VAF distributions | planned |
+| **D** — per variant | fitness per variant class, with bootstrap | **done** |
 
 ## Layout
 
@@ -74,10 +74,12 @@ vertical ridge running across all mutation rates. Shape responds to
 fitness; counts respond to mutation rate, and counts cannot be computed without
 a screening denominator the data does not carry.
 
-**Fitness is per variant, not global.** In the public data TET2 clones grow
-about twice as fast as DNMT3A ones, and within DNMT3A the R882 hotspot
-produces clones nearly twice the size at the same median age
-(p = 5.4 × 10⁻⁵).
+**Fitness is per variant, but this dataset resolves only part of it.** Fitting
+each variant class separately gives DNMT3A R882 at 0.130, TET2 at 0.130 and
+other DNMT3A variants at 0.120 per year. Bootstrapping the observed variants
+shows only one of the three pairwise differences survives the sample size:
+TET2 above non-hotspot DNMT3A. The R882 advantage, real in the literature, is
+smaller than what 52 variants can resolve.
 
 **The estimate was checked against the literature, and a parameter was wrong.**
 Reading Watson 2020, Mitchell 2022 and Fabre 2022 showed that two independent

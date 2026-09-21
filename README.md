@@ -28,7 +28,7 @@ The public data agrees: age explains only 9% of the variance in clone size
 | Exploration | establish what the data can answer | **done** |
 | **A** — minimal model | Moran process with selection, validated analytically | **done** |
 | **B** — realistic model | multiple clones, continuous mutation influx | **done** |
-| C — parameter sweep | ABC inference on an HPC cluster | planned |
+| **C** — parameter sweep | ABC inference on an HPC cluster | **done** |
 | D — confrontation | compare against observed VAF distributions | planned |
 
 ## Layout
@@ -46,6 +46,8 @@ uv venv && uv pip install pandas matplotlib scipy
 .venv/bin/python analysis/01_exploration.py    # explore the public data
 .venv/bin/python analysis/02_validation.py     # validate the single-clone model
 .venv/bin/python analysis/03_multiclone.py     # many clones, VAF distributions
+nextflow run pipeline/sweep.nf -profile slurm  # the grid, on a cluster
+.venv/bin/python analysis/04_abc.py            # score the grid, get a posterior
 ```
 
 ## Key results so far
@@ -63,6 +65,14 @@ used tau-leaping, which let a one-cell clone die and give birth in the same
 time slice and inflated survival by 3 standard errors. Sampling the
 birth-death transition exactly removed the bias and allowed a time step five
 times larger.
+
+**Fitness is identifiable from this data; the mutation rate is not.** A 180-point
+grid scored by approximate Bayesian computation puts the selection coefficient
+at s = 0.10 per year, with every accepted point at the same value. The mutation
+rate stays spread over 91% of the grid. The distance surface shows why: a
+vertical ridge at s = 0.10 running across all mutation rates. Shape responds to
+fitness; counts respond to mutation rate, and counts cannot be computed without
+a screening denominator the data does not carry.
 
 **Fitness is per variant, not global.** In the public data TET2 clones grow
 about twice as fast as DNMT3A ones, and within DNMT3A the R882 hotspot

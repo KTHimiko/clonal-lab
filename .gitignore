@@ -14,3 +14,6 @@ __pycache__/
 
 # ambiente virtual
 .venv/
+
+# sweep output from the cluster
+results/

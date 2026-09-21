@@ -100,6 +100,15 @@ twice: 65→71.5 and 71.5→78. Deceleration is the first minus the second.
 
 ### Deceleration is a property of the host, not the driver
 
+> **Corroborated analytically, and the phenomenon has a name.** Mon Père,
+> Terenzi & Werner (2026, *Cancer Discovery*) derive that a clone's growth rate
+> "is proportional to the difference between its own innate fitness and the
+> average fitness in the HSC population" — which is this model's `W` term, and
+> the reason the regression below finds what it finds. The established name is
+> **clonal interference**, not saturation: the mechanism is being overtaken by
+> fitter neighbours rather than approaching a ceiling. See
+> [`LITERATURE_E_RESULTS.md`](LITERATURE_E_RESULTS.md).
+
 Three candidates, each regressed on deceleration alone:
 
 | predictor | R² |

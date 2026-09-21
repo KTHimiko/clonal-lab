@@ -134,7 +134,9 @@ experiment and
 [`analysis/METHOD_BIAS_LITERATURE.md`](analysis/METHOD_BIAS_LITERATURE.md) and
 [`analysis/OPEN_PROBLEMS.md`](analysis/OPEN_PROBLEMS.md) for what checking it
 against the papers corrected,
-[`analysis/TET2_AGE.md`](analysis/TET2_AGE.md) for the age-dependence question, [`analysis/FINDINGS.md`](analysis/FINDINGS.md) for the exploration,
+[`analysis/TET2_AGE.md`](analysis/TET2_AGE.md) for the age-dependence question,
+[`analysis/LITERATURE_E_RESULTS.md`](analysis/LITERATURE_E_RESULTS.md) for what
+the papers say about each of those results, [`analysis/FINDINGS.md`](analysis/FINDINGS.md) for the exploration,
 [`analysis/LITERATURE_REVIEW.md`](analysis/LITERATURE_REVIEW.md) for what the
 papers changed, and [`reference/README.md`](reference/README.md) for data
 provenance.

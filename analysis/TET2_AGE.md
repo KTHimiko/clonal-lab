@@ -143,6 +143,39 @@ relative change from opposite sides.
 
 ---
 
+## 5. A third mechanism, found after the fact
+
+A second literature pass ([`LITERATURE_E_RESULTS.md`](LITERATURE_E_RESULTS.md))
+turned up a candidate neither this analysis nor the paper it argues with had
+modelled. Mon Père, Terenzi & Werner (2026) report that **DNMT3A is enriched for
+single-hit clones while TET2, ASXL1, JAK2, SF3B1 and SRSF2 are enriched for
+multihit evolution**, and that "the fittest clones emerge predominantly later in
+life in accordance with a multistep evolutionary process."
+
+A TET2 clone that picks up a second driver later in life accelerates. Under a
+single-mutation model that is indistinguishable from "TET2 fitness rises with
+age" — and it is gene-specific in exactly the way the observation is, because
+DNMT3A clones, being single-hit, would show no such acceleration.
+
+| mechanism | predicts TET2-specific? | extra assumption needed? |
+|---|---|---|
+| wild type declines | **no** — lifts every clone (measured: ×2.04 for the untouched class) | — |
+| TET2 fitness ramps | yes, by construction | yes: the ramp itself, unexplained |
+| **multihit** | **yes, from measured gene-level biology** | **none** |
+
+It is the better explanation, and section 4's claim needs narrowing because of
+it. "Only an absolute measurement of wild-type output can distinguish these" is
+true of the ramp-versus-wild-type pair. It is **not** true of multihit, which
+predicts something observational: accelerating TET2 clones should carry a second
+driver, non-accelerating ones should not.
+
+That test cannot be run on this dataset. The Watson table has no person
+identifier, so two variants cannot be assigned to the same individual — the
+third time in this project that aggregation has removed the column a question
+needed.
+
+---
+
 ## Limitations
 
 - **Three cohorts, 72 TET2 variants.** Acuna2017 contributes 9, and its negative
@@ -155,3 +188,6 @@ relative change from opposite sides.
   point would leave a different signature and has not been tested.
 - **No mortality.** If TET2 carriers with large clones die earlier, the oldest
   age bands are depleted of exactly the observations the test depends on.
+- **Only two mechanisms were modelled**, and section 5 gives reason to think the
+  third is the likeliest of the three. Neither implemented mechanism is a
+  multistep process, so this analysis could not have found one.

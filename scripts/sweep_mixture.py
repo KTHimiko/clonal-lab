@@ -33,7 +33,6 @@ import sys
 from pathlib import Path
 
 import numpy as np
-from scipy import stats
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from model.population import simulate_cohort, sizes_to_vaf
@@ -47,9 +46,18 @@ CLASSES = 8
 
 
 def mixture(mean, shape, k=CLASSES):
-    """k equally weighted classes at the midpoint quantiles of a gamma."""
+    """
+    k equally weighted fitness classes at the midpoint quantiles of a gamma.
+
+    The quantiles come from a large deterministic sample rather than from
+    scipy's inverse CDF: the cluster nodes are a minimal cloud image with numpy
+    and no scipy, and removing a dependency is cheaper and more durable than
+    installing one on three machines. A million draws under a fixed seed puts
+    these quantiles well inside the noise of the simulation they feed.
+    """
     q = (np.arange(k) + 0.5) / k
-    return list(np.round(stats.gamma.ppf(q, a=shape, scale=mean / shape), 5)), [1.0 / k] * k
+    draws = np.random.default_rng(20260921).gamma(shape, mean / shape, 1_000_000)
+    return list(np.round(np.quantile(draws, q), 5)), [1.0 / k] * k
 
 
 def observe(v, rng):

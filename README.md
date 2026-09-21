@@ -44,6 +44,8 @@ The public data agrees: age explains only 9% of the variance in clone size
 | **G** — multihit | can bulk VAF separate two hits in one cell from two clones? | **done** |
 | **H** — TET2 longitudinal | each clone as its own control, over 13 years | **done** |
 | **I** — replication | pre-registered, then abandoned for a stated reason | **done** |
+| **J** — tailored grid | two estimators on one cohort; one has no inverse | **done** |
+| **K** — mixture, N free | can any model version fit both observables? | **done** |
 
 ## Layout
 
@@ -71,6 +73,8 @@ nextflow run pipeline/sweep.nf -profile slurm  # the grid, on a cluster
 .venv/bin/python analysis/11_multihit.py       # two hits in one cell, or two clones?
 .venv/bin/python analysis/12_tet2_longitudinal.py  # TET2 and age, within clone
 .venv/bin/python analysis/13_lothian_replication.py # why the replication cannot be run
+.venv/bin/python analysis/14_fabre_grid.py     # two estimators, one cohort, one grid
+.venv/bin/python analysis/15_mixture_fit.py    # a fitness distribution, with N free
 ```
 ## What it found
 
@@ -112,6 +116,16 @@ computed afterwards while planning a replication, which is a retrospective
 downgrade of the result rather than a footnote to it. The replication was
 pre-registered and then abandoned: the candidate cohort holds 8 TET2 clones
 against Fabre's 114.
+
+**The model cannot fit both observables of one cohort.** Letting fitness be a
+distribution rather than a number, and letting the stem-cell population range
+over eightfold, no combination of the two reproduces both the sizes of clones and
+their growth rates. The diagnosis is single: the model's clones come out about
+twice as large as the observed ones, and because measurement noise scales as
+`1/√(VAF·depth)`, larger clones are measured more precisely and their rate
+distribution comes out too narrow. One failure, not two — and 51 technical
+replicate triplets rule out the obvious alternative, showing the assay is if
+anything *less* noisy than binomial.
 
 **And four questions could not be answered**, each on a different missing column:
 the mutation rate and the one unbiased age-based estimator both need a screening

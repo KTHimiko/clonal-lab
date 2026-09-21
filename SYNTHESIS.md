@@ -157,6 +157,7 @@ that is easy to repeat.
 | stage H reported without its power | planning a replication forced the calculation | 0.56, which downgrades a borderline positive |
 | reading the caller output instead of the cohort | a sanity check committed with the pre-registration | a spurious failed replication, caught before it was believed |
 | banding a ratio whose denominator has no inverse | a diagnostic table the write-up demanded | a 36-minute cluster run that could not have answered its own question |
+| blaming the rate spread on fitness heterogeneity | 51 technical replicate triplets in data we already held | the real cause is clone size, and the two failures are one |
 
 **The pattern underneath almost all of them:** before comparing two numbers,
 establish that they measure the same thing. Hotspot against gene average.
@@ -206,6 +207,13 @@ mechanism, and the model implements it through the Moran normalisation `W`.
    ([`STAGE_J_FABRE_GRID.md`](analysis/STAGE_J_FABRE_GRID.md))
 3. **Phase.** Everything about multihit waits on it, and no amount of bulk
    sequencing supplies it.
+4. **Why the model's clones are too big.** Stage K established that no
+   combination of fitness distribution and stem-cell population — across an
+   eightfold range of N — reproduces both the observed clone sizes and their
+   growth rates, and that the second failure follows from the first. The
+   candidates are the detection floor, when drivers are acquired, and niche
+   structure. Each is a different model rather than a different parameter.
+   ([`STAGE_K_MIXTURE.md`](analysis/STAGE_K_MIXTURE.md))
 
 ---
 

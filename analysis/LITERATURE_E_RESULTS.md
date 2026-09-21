@@ -168,17 +168,48 @@ people needs the cohorts it was built from.**
 
 ---
 
-## 6. Still no prior art for the design-bias measurement itself
+## 6. Prior art exists, and I had said it did not
 
-Searched again with different terms. Nothing found that simulates a cohort with
-known `s` and measures what each study design recovers. The closest remains
-BESTish (2025), which unifies cross-sectional and longitudinal data in one
-Bayesian framework rather than measuring the bias of each, and which explicitly
-does not analyse how detection thresholds bias estimates.
+The first pass concluded "not found, which is weaker than 'nobody has'". That
+hedge was doing real work, because there is prior art and it is in the repository
+of the very paper stage E spent four documents arguing with.
 
-"Not found" is weaker than "does not exist", and this is a large literature.
+Fabre's analysis code (`github.com/josegcpa/clonal_dynamics`, data freely on
+figshare at `10.6084/m9.figshare.15029118`) contains:
 
----
+| file | what it does |
+|---|---|
+| `Notebook_Simulations.Rmd` | validates their estimator against Fisher–Wright simulations with known ground truth |
+| `investigate_simulations_early_late.R` | "estimation using early and late parts of the trajectory" |
+| `investigate_simulations_competition.R` | "the effect of clonal competition on inference" |
+| `calculate_theoretical_lod.R` | a theoretical limit of detection for their assay |
+
+**Those last three are the two effects stage E measured and the one it depended
+on.** They ran a known-truth simulation study of their own design, tested
+whether the early and late parts of a trajectory give different answers, and
+tested what competition does to their inference.
+
+What stage E did that is not in that list is compare *three designs* against one
+truth — their work validates their own estimator, not the cross-design ratio.
+That distinction is real but much narrower than "no prior art", and stating the
+narrow version is the honest one.
+
+**It is also checkable.** The code and the derived data are open, with no access
+application: only the raw sequencing sits behind the EGA. Their results either
+corroborate the 43% figure or correct it, and there is no reason to guess which.
+
+### One thing to check before anything else
+
+They simulate with `clonex`, a **Fisher–Wright** implementation. This project is
+a **Moran** process, and stage A established that the two define fitness
+differently — fixation goes as `s/(1+s)` under Moran and approximately `2s` under
+Wright–Fisher, because the offspring variance differs. A selection coefficient
+is not a portable number across those two conventions.
+
+So part of the gap between Watson's 15.0% and Fabre's 6.2% may be definitional
+rather than methodological. This has not been checked, it is cheap to check, and
+if it is true it changes the headline of stage E. **It should be the first thing
+done, before any new modelling.**
 
 ## What this changes in the project
 
@@ -193,17 +224,21 @@ does not analyse how detection thresholds bias estimates.
 
 **Next, in order of expected value**
 
-3. **Test the multihit hypothesis — which needs data we do not have.** The
+3. **Read Fabre's simulation notebooks and pull their figshare data.** Free, no
+   application, and it directly tests the centrepiece result. Start by checking
+   whether their `s` is a Wright–Fisher coefficient, which would make part of
+   the published gap definitional.
+4. **Test the multihit hypothesis — which needs data we do not have.** The
    question is whether TET2 variants co-occur with a second driver more often in
    older carriers. It cannot be asked of the Watson table, which has no person
    identifier. It can be asked of any cohort that publishes per-individual
    variant lists, and Mon Père's own analysis is built on exactly that, so the
    route is to their data rather than to a new computation on ours.
-4. **Implement second hits in the model.** A clone that acquires another driver
+5. **Implement second hits in the model.** A clone that acquires another driver
    gains fitness. The per-clone fitness matrix already supports it; what is
    missing is a second mutation process acting on existing clones rather than on
    wild type.
-5. **Compare our inferred fitness against η = 0.07 per year** — Mon Père's
+6. **Compare our inferred fitness against η = 0.07 per year** — Mon Père's
    underlying innate-fitness mean — being careful, this time, to compare it
    against an underlying spectrum and not against our detection-conditioned
    estimates.

@@ -114,6 +114,31 @@ and number of timepoints, which is the same wall stage G hit.
 
 ---
 
+## Retrospective correction — this study had 0.56 power
+
+Added after stage I. Planning a replication required computing this stage's
+power, which had not been done at the time it was written.
+
+Resampling **this stage's own empirical distributions at its own sample sizes**,
+a one-sided test at α = 0.05 detects the observed +0.0305 difference **56% of the
+time.**
+
+That changes how everything below should be read. A borderline positive from a
+study with 56% power is the profile of a finding that does not replicate — not
+evidence that it is wrong, but a reason to hold it loosely. Combined with the
+three measures tested, the between-gene comparison here should be treated as
+**suggestive and unreplicated**, not as a result.
+
+The single-gene statement is less affected, because it does not depend on a
+between-group test: TET2's late-half interval excludes zero on its own and
+DNMT3A's does not.
+
+Reaching 0.80 power would need roughly 200 to 230 TET2 clones with four or more
+timepoints — about twice what this cohort provides. See
+[`STAGE_I_LOTHIAN.md`](STAGE_I_LOTHIAN.md).
+
+---
+
 ## What this settles
 
 **TET2 clones are still growing after 75 and DNMT3A clones are not**, in 234

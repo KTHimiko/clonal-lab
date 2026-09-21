@@ -129,6 +129,30 @@ curl -sL "https://api.figshare.com/v2/articles/15029118"   # lists the files
 European Genome–phenome Archive under controlled access (EGAD00001007682/3/4)
 and was neither requested nor used.
 
+### Robertson 2022 (public domain, NCBI GEO) — `data/robertson2022/`
+
+Added in stage I, as a candidate replication cohort for stage H. **Two files,
+and the difference between them matters:**
+
+| file | rows | genes | median depth | what it is |
+|---|---|---|---|---|
+| `...1PCT_VAF...` | 8,566 | 69 | 1,110× | caller output at a 1% threshold; dominated by artifacts |
+| `...2PCT_VAF...` | **255** | **23** | **2,153×** | the CHIP-grade set the paper analyses |
+
+The paper reports a median depth of 2,153×, which only the second matches, and
+only the second is led by DNMT3A and TET2. Stage I's first run used the first
+file and the pre-specified sanity check rejected it — LBC1921 clones came out
+shrinking at 4.5% per year.
+
+Columns: `PreferredSymbol`, `participant_id`, `wave`, `AF`, `DP`, position and
+annotation. **No ages**: those are in dbGAP under controlled access
+(`phs000821.v1.p1`) and were not requested. Wave number is converted with
+3 years/wave for LBC1921 and 4 for LBC1936.
+
+```bash
+curl -sLO "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE178nnn/GSE178936/suppl/GSE178936_LBC_ARCHER.2PCT_VAF.Feb22.non-synonymous.tsv.gz"
+```
+
 ### Mitchell 2022 (CC BY 4.0) — `data/mitchell2022/`
 
 The full Mendeley package holds **53 files and 5.15 GB uncompressed**, almost
@@ -180,6 +204,18 @@ argue with.
 `investigate_simulations_competition.R`, which test their own estimator against
 simulation. Read in stage E's literature check; the overlap with our design
 comparison is adjacent rather than direct.*
+
+### Robertson et al. 2022 — data
+
+**Longitudinal dynamics of clonal hematopoiesis identifies gene-specific fitness
+effects**, *Nature Medicine* 28:1439–1446. 85 participants of the Lothian Birth
+Cohorts, 2–5 timepoints, ages 70–90, 75-gene targeted panel.
+
+- Data: <https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE178936> — GEO,
+  open, no application
+- Code: <https://github.com/neilrobertson/LBC_ARCHER>
+- Phenotypic data including ages: dbGAP `phs000821.v1.p1`, **controlled access,
+  not requested**
 
 ### Mitchell et al. 2022 — data matrices
 

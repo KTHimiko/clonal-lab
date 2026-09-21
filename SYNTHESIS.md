@@ -117,8 +117,11 @@ control:
 | TET2 | 0.0711 | 0.0401 | **+0.0133 to +0.0598** |
 
 The between-gene comparison is **borderline** (one-sided P = 0.968, two-sided
-interval grazes zero) and **three measures were tested**. Both recorded.
-([`TET2_LONGITUDINAL.md`](analysis/TET2_LONGITUDINAL.md))
+interval grazes zero), **three measures were tested**, and the study had
+**0.56 power** — computed afterwards, while planning a replication. A borderline
+positive at 56% power is the profile of a result that does not replicate. Hold it
+loosely. ([`TET2_LONGITUDINAL.md`](analysis/TET2_LONGITUDINAL.md),
+[`STAGE_I_LOTHIAN.md`](analysis/STAGE_I_LOTHIAN.md))
 
 ---
 
@@ -139,6 +142,8 @@ that is easy to repeat.
 | "no prior art for this" | reading the repository of the paper being argued with | there is adjacent prior art |
 | a cis/trans threshold 7× smaller than the read noise | computing the noise instead of trusting the null | a false negative that looked clean |
 | a bootstrap variable reused by two sections | the number contradicting itself | P = 0.01 reported for a quantity that is 0.90 |
+| stage H reported without its power | planning a replication forced the calculation | 0.56, which downgrades a borderline positive |
+| reading the caller output instead of the cohort | a sanity check committed with the pre-registration | a spurious failed replication, caught before it was believed |
 
 **The pattern underneath almost all of them:** before comparing two numbers,
 establish that they measure the same thing. Hotspot against gene average.
@@ -176,11 +181,12 @@ mechanism, and the model implements it through the Moran normalisation `W`.
 
 ## What is open
 
-1. **Replication of result 8.** Robertson 2022 (Lothian Birth Cohorts) is an
-   independent longitudinal cohort of 85 people, ages 70–90, at 2,238× depth —
-   twice Fabre's — with processed variant calls openly available at GEO
-   **GSE178936**. The age window is exactly where the finding lives. The risk is
-   power: 85 people against 394.
+1. ~~Replication of result 8 in the Lothian cohorts.~~ **Attempted, and it
+   cannot be done there.** The CHIP-grade file holds 8 TET2 clones with three or
+   more waves against Fabre's 114. Reaching conventional power needs roughly 200
+   to 230 — twice Fabre, twenty-five times Lothian. A replication still matters
+   more than anything else on this list; it needs a cohort that does not yet
+   appear to exist in the open. ([`STAGE_I_LOTHIAN.md`](analysis/STAGE_I_LOTHIAN.md))
 2. **Fitting the model to trajectories rather than to the spectrum.** Fabre's
    data has four to five timepoints per clone, which allows an inference this
    project has never attempted, and which is expensive enough to justify the

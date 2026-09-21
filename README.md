@@ -43,6 +43,7 @@ The public data agrees: age explains only 9% of the variance in clone size
 | **F** — real cohort | the same three designs on 394 real people | **done** |
 | **G** — multihit | can bulk VAF separate two hits in one cell from two clones? | **done** |
 | **H** — TET2 longitudinal | each clone as its own control, over 13 years | **done** |
+| **I** — replication | pre-registered, then abandoned for a stated reason | **done** |
 
 ## Layout
 
@@ -69,6 +70,7 @@ nextflow run pipeline/sweep.nf -profile slurm  # the grid, on a cluster
 .venv/bin/python analysis/10_real_design_gap.py # the three designs on a real cohort
 .venv/bin/python analysis/11_multihit.py       # two hits in one cell, or two clones?
 .venv/bin/python analysis/12_tet2_longitudinal.py  # TET2 and age, within clone
+.venv/bin/python analysis/13_lothian_replication.py # why the replication cannot be run
 ```
 ## What it found
 
@@ -105,7 +107,11 @@ the longitudinal estimate is the outlier at 0.062, low by the predicted amount.
 
 **TET2 clones are still growing after 75; DNMT3A clones are not.** 234
 trajectories, each clone its own control. The between-gene comparison is
-borderline and three measures were tested — both recorded rather than hidden.
+borderline, three measures were tested, and the study had **0.56 power** —
+computed afterwards while planning a replication, which is a retrospective
+downgrade of the result rather than a footnote to it. The replication was
+pre-registered and then abandoned: the candidate cohort holds 8 TET2 clones
+against Fabre's 114.
 
 **And four questions could not be answered**, each on a different missing column:
 the mutation rate and the one unbiased age-based estimator both need a screening

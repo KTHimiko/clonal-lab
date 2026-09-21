@@ -37,7 +37,7 @@ import numpy as np
 
 def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
                     dt=0.1, max_clones=64, seed=None, record_ages=None,
-                    initial_clones=0):
+                    initial_clones=0, s_weights=None):
     """
     Simulate a cohort of people from birth to `years`.
 
@@ -46,8 +46,15 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
     N : int
         Number of haematopoietic stem cells. Published estimates span
         50,000 to 200,000.
-    s : float
-        Selection coefficient of a driver mutation, per year.
+    s : float or sequence of float
+        Selection coefficient of a driver mutation, per year. A sequence makes
+        every new clone draw its own value from that set, which is what a real
+        marrow looks like: one person carries a slow DNMT3A clone and a fast
+        splicing-gene clone at the same time, and they compete with each other.
+        A single float keeps every clone identical, which is what isolating one
+        effect at a time requires.
+    s_weights : sequence of float, optional
+        Probabilities for the values in `s`. Uniform when omitted.
     mu : float
         Driver mutation rate per cell per year. With N cells, new clones
         appear at rate N*mu per year.
@@ -81,11 +88,25 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
                     following 'the clone in slot 7' across two snapshots
                     without checking the birth time silently splices two
                     different clones into one fake trajectory.
-        'fitness'   (people, max_clones) array of each slot's s
+        'fitness_at' list of (people, max_clones) arrays, one per age, holding
+                    each live clone's own s. With a mixture of fitnesses a slot
+                    changes meaning when it is recycled, so the final matrix is
+                    not valid for earlier snapshots.
+        'fitness'   (people, max_clones) array of each slot's s at the END
         'overflow'  how many mutation events found no free slot
     """
     rng = np.random.default_rng(seed)
     record_ages = np.atleast_1d(record_ages if record_ages is not None else years)
+
+    s_values = np.atleast_1d(np.asarray(s, dtype=np.float64))
+    if s_weights is not None:
+        s_weights = np.asarray(s_weights, dtype=np.float64)
+        s_weights = s_weights / s_weights.sum()
+
+    def draw_s(size):
+        if s_values.size == 1:
+            return np.full(size, s_values[0])
+        return rng.choice(s_values, size=size, p=s_weights)
 
     sizes = np.zeros((people, max_clones), dtype=np.float64)
     fitness = np.zeros((people, max_clones), dtype=np.float64)
@@ -94,10 +115,10 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
 
     if initial_clones:
         sizes[:, :initial_clones] = 1.0
-        fitness[:, :initial_clones] = s
+        fitness[:, :initial_clones] = draw_s((people, initial_clones))
         births[:, :initial_clones] = 0.0
 
-    snapshots, birth_snaps = [], []
+    snapshots, birth_snaps, fitness_snaps = [], [], []
     snap_at = list(np.sort(record_ages))
     steps = int(round(years / dt))
     new_clone_rate = N * mu * dt          # expected new clones per person per slice
@@ -174,22 +195,25 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
             if take:
                 slots = free[:take]
                 sizes[k, slots] = 1.0
-                fitness[k, slots] = s
+                fitness[k, slots] = draw_s(slots.size)
                 births[k, slots] = t
 
         # --- snapshot --------------------------------------------------------
         while snap_at and t >= snap_at[0] - 1e-9:
             snapshots.append(sizes.copy())
             birth_snaps.append(births.copy())
+            fitness_snaps.append(fitness.copy())
             snap_at.pop(0)
 
     while snap_at:                                   # ages beyond the run
         snapshots.append(sizes.copy())
         birth_snaps.append(births.copy())
+        fitness_snaps.append(fitness.copy())
         snap_at.pop(0)
 
     return {"ages": np.sort(record_ages), "sizes": snapshots,
-            "births": birth_snaps, "fitness": fitness, "overflow": overflow}
+            "births": birth_snaps, "fitness_at": fitness_snaps,
+            "fitness": fitness, "overflow": overflow}
 
 
 def sizes_to_vaf(sizes, N):

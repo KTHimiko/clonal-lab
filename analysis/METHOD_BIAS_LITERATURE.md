@@ -91,6 +91,14 @@ carries a bias we cannot currently estimate.
 
 ## C3 — Does a third, independent method break the tie?
 
+> **Resolved in [`OPEN_PROBLEMS.md`](OPEN_PROBLEMS.md), and the conclusion below
+> is wrong.** Mitchell publish two different quantities and this section compares
+> the wrong one. Their *measured* expanded clades run 10–30% per year — DNMT3A
+> clades at 0.167–0.200 — and agree with the spectrum fits. The 5–10% quoted
+> below is their *inferred underlying spectrum* over every driver that arises,
+> including those that never expand. Left in place because the reasoning that
+> follows is sound and only the pairing was wrong.
+
 **Yes, and it does not side with us.** This is the open problem.
 
 Mitchell et al. 2022 reconstruct clonal histories from phylogenies built out of
@@ -202,16 +210,20 @@ Stage E's contribution is putting a number on it, not noticing it.
 3. The saturation mechanism now carries a named counter-observation: fast
    drivers should decelerate most and are reported to decelerate least.
 
-**Open, in priority order**
+**Both open items were worked through in
+[`OPEN_PROBLEMS.md`](OPEN_PROBLEMS.md)**
 
-1. **Reconcile with the phylogenetic estimates.** Requires all three methods on
-   one variant class. Until then, stage E's claim that the spectrum fit is the
-   unbiased one rests on self-consistency, and a third method disagrees.
-2. **Explain the fast-driver discrepancy**, or find that our competition term
-   saturates too early. This is directly testable: fit our own simulated fast
-   drivers over a 13-year window and check whether they decelerate as sharply
-   as the model implies.
-3. **Age-dependent fitness for TET2**, in the direction Fabre reports.
+1. ~~Reconcile with the phylogenetic estimates.~~ **Done, and it corroborates
+   the spectrum fits.** The disagreement was an artifact of comparing a
+   detection-conditioned estimate against an underlying spectrum.
+2. ~~Explain the fast-driver discrepancy.~~ **Mechanism corrected, conflict
+   narrowed.** Deceleration is driven by the carrier's burden growth
+   (R² = 0.956), not by the clone's own fitness (R² = 0.003), and is
+   non-monotonic in fitness at fixed size. What remains unexplained is
+   specific: Fabre's fast drivers show little deceleration while still growing
+   fast, which this model produces only after a clone has stopped.
+3. **Age-dependent fitness for TET2**, in the direction Fabre reports. Still
+   open, and now the only one.
 
 ---
 

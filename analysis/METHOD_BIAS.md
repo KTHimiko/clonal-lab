@@ -255,21 +255,34 @@ window.
 - **One cohort per simulation.** As section 4 shows, this is exactly what keeps
   the model from reproducing the full real-data effect.
 
-## The two open problems the literature check raised
+## The two open problems the literature check raised — both now addressed
 
-**A third method disagrees, and this experiment cannot adjudicate.** Mitchell
-2022 reconstructs clonal histories from phylogenies — machinery shared with
-neither VAF spectra nor serial sampling — and reports DNMT3A at ~5% per year.
-That sides with Fabre, not with the spectrum. Stage E validated the spectrum
-fit against a grid produced by our own model, so an upward bias present in real
-data but absent from the simulator is invisible here by construction. Settling
-it needs all three methods restricted to one variant class.
+Worked through in [`OPEN_PROBLEMS.md`](OPEN_PROBLEMS.md). In short:
 
-**Fast drivers should decelerate most, and are reported to decelerate least.**
-Our model makes the saturation bias grow with `s`: at s = 0.24 thirteen years
-of follow-up recover almost nothing. Fabre find the opposite ordering —
-deceleration "most marked" for DNMT3A, BRCC3 and TP53, and "almost no
-deceleration" in fast drivers like U2AF1, SRSF2 P95H and IDH1. Either those
-clones were still small through the window, or our competition term saturates
-too early. This is directly testable on our own simulated fast drivers and has
-not been tested.
+**The third method does not disagree.** Mitchell's per-clone phylogenetic
+estimates, which ship with their code, put DNMT3A clades at 0.167–0.200 per year
+— above Watson's spectrum fit, not below it. The "~5% per year" recorded in the
+literature check is their *inferred underlying spectrum* over every driver that
+arises, including the ones that never expand; the measured expanded clades run
+10–30%. Comparing a detection-conditioned estimate against the population it was
+drawn from was the error, and it is the same error as the R882-versus-gene
+-average pair, one layer down. With the comparison corrected, three independent
+detection-conditioned methods land between 0.11 and 0.20 and the longitudinal
+estimate is the outlier at 0.062. **This is the external corroboration section 5
+says this experiment cannot supply for itself.**
+
+**The saturation mechanism was misstated here.** This document says the bias
+"grows with `s`". Regressing deceleration on three candidates in a mixed-fitness
+cohort says otherwise: the carrier's total fitness-weighted burden growth gives
+R² = 0.956, the clone's own size 0.271, and its own fitness **0.003**. A clone
+slows by the amount its marrow filled, whoever filled it. Held at fixed size,
+deceleration is non-monotonic in fitness — it peaks while the clone is still
+expanding and collapses to zero once it has fixed.
+
+That does not fully reconcile with Fabre, and the residue is specific: their
+fast drivers show little deceleration *while still growing fast*, and this model
+only produces little deceleration once a clone has stopped. Settling it needs
+the baseline VAF distribution of their fast-driver clones.
+
+The 43% figure is unaffected — it was measured with one `s` per cohort, where
+size and fitness move together as they do in any real detected sample.

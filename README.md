@@ -31,6 +31,7 @@ The public data agrees: age explains only 9% of the variance in clone size
 | **C** — parameter sweep | ABC inference on an HPC cluster | **done** |
 | **D** — per variant | fitness per variant class, with bootstrap | **done** |
 | **E** — method bias | which study design recovers a known truth | **done** |
+| **E2** — open problems | checked against the literature and a third method | **done** |
 
 ## Layout
 
@@ -51,6 +52,7 @@ nextflow run pipeline/sweep.nf -profile slurm  # the grid, on a cluster
 .venv/bin/python analysis/04_abc.py            # score the grid, get a posterior
 .venv/bin/python analysis/05_per_variant.py    # fitness per variant class
 .venv/bin/python analysis/06_method_bias.py    # what each study design recovers
+.venv/bin/python analysis/07_open_problems.py  # against a third, independent method
 ```
 
 ## Key results so far
@@ -94,9 +96,10 @@ of 2.42 against the 2.4 predicted from design bias alone. A large clone
 genuinely grows more slowly than its fitness, so follow-up measures realised
 growth rather than fitness from birth. Fabre attribute the same slowdown to "an
 increasingly competitive oligoclonal landscape" — this model's competition term
-in words. A third method disagrees: phylogenetic reconstruction puts DNMT3A near
-5% per year, and stage E cannot adjudicate that, because it validated the
-spectrum fit against a grid produced by the same model.
+in words. A third, independent method agrees: Mitchell's per-clone phylogenetic
+estimates put DNMT3A clades at 0.167–0.200 per year, using coalescence patterns
+rather than a frequency spectrum. Three detection-conditioned methods land
+between 0.11 and 0.20; the longitudinal estimate is the outlier at 0.062.
 
 **The slope of log(VAF) against age has no inverse.** Across true values from
 0.08 to 0.24 it rises and then falls, so one observed slope is compatible with
@@ -113,8 +116,9 @@ with the corrected value improved the fit 2.4-fold and moved s from 0.10 to
 
 See [`analysis/METHOD_BIAS.md`](analysis/METHOD_BIAS.md) for the study-design
 experiment and
-[`analysis/METHOD_BIAS_LITERATURE.md`](analysis/METHOD_BIAS_LITERATURE.md) for
-what checking it against the papers corrected, [`analysis/FINDINGS.md`](analysis/FINDINGS.md) for the exploration,
+[`analysis/METHOD_BIAS_LITERATURE.md`](analysis/METHOD_BIAS_LITERATURE.md) and
+[`analysis/OPEN_PROBLEMS.md`](analysis/OPEN_PROBLEMS.md) for what checking it
+against the papers corrected, [`analysis/FINDINGS.md`](analysis/FINDINGS.md) for the exploration,
 [`analysis/LITERATURE_REVIEW.md`](analysis/LITERATURE_REVIEW.md) for what the
 papers changed, and [`reference/README.md`](reference/README.md) for data
 provenance.

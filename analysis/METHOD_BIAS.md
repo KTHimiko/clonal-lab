@@ -11,11 +11,10 @@ claims below and left one open problem.
 ## The question
 
 Stage D compared our estimate with two published ones and found they disagree
-with each other by up to threefold on the same gene. Watson 2020 puts DNMT3A
-R882 at s = 0.148 per year; Fabre 2022 puts it at 0.050. Both are careful work
-on real cohorts. They differ in **design**: Watson reads one blood sample from
-many people of different ages, Fabre follows the same people for a median of
-thirteen years.
+on the same gene. For DNMT3A, Watson 2020 gives s = 0.150 per year and Fabre
+2022 gives 0.062 — a factor of 2.4. Both are careful work on real cohorts. They
+differ in **design**: Watson reads one blood sample from many people of
+different ages, Fabre follows the same people for a median of thirteen years.
 
 With real data that disagreement cannot be settled. Nobody knows the true
 fitness of a clone in a living person, so measuring harder does not help.

@@ -4,11 +4,10 @@ Stage E — which measurement method recovers the truth?
 
 THE PROBLEM THIS EXISTS TO SOLVE
 Stage D compared our estimate against two published ones and found they
-disagree with each other by up to threefold on the same gene: Watson 2020 puts
-DNMT3A R882 at s = 0.148 per year, Fabre 2022 at 0.050. Both are careful work
-on real cohorts. They differ in DESIGN — Watson reads a single blood sample
-from many people of different ages; Fabre follows the same people for a median
-of thirteen years.
+disagree on the same gene: for DNMT3A, Watson 2020 gives s = 0.150 per year and
+Fabre 2022 gives 0.062, a factor of 2.4. Both are careful work on real cohorts.
+They differ in DESIGN — Watson reads a single blood sample from many people of
+different ages; Fabre follows the same people for a median of thirteen years.
 
 With real data there is no arbiter. Nobody knows the true fitness of a clone
 in a living person, so a disagreement between two methods cannot be settled by

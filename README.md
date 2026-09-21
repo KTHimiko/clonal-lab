@@ -32,6 +32,7 @@ The public data agrees: age explains only 9% of the variance in clone size
 | **D** — per variant | fitness per variant class, with bootstrap | **done** |
 | **E** — method bias | which study design recovers a known truth | **done** |
 | **E2** — open problems | checked against the literature and a third method | **done** |
+| **E3** — TET2 and age | can this data constrain age-dependent fitness? | **done** |
 
 ## Layout
 
@@ -53,6 +54,7 @@ nextflow run pipeline/sweep.nf -profile slurm  # the grid, on a cluster
 .venv/bin/python analysis/05_per_variant.py    # fitness per variant class
 .venv/bin/python analysis/06_method_bias.py    # what each study design recovers
 .venv/bin/python analysis/07_open_problems.py  # against a third, independent method
+.venv/bin/python analysis/08_tet2_age.py       # can the data see age-dependent fitness?
 ```
 
 ## Key results so far
@@ -108,6 +110,19 @@ floor — same cohorts, same variants — changes it by a factor of 4.1. Stage 1
 0.048 and stage D's 0.13 were never in conflict; they are two instruments, one
 of which does not measure what its units suggest.
 
+**The TET2 age effect is not visible here, and could not have been.** Fabre
+report TET2 clones growing faster in older people. Pooled across cohorts this
+dataset appears to agree — the gap against DNMT3A reaches P = 0.948 once the
+detection floor is dropped — but stratifying by cohort collapses the estimate by
+87%, because TET2 is over-represented in the older cohorts and absent from one
+entirely. Simulating two worlds calibrated to be identical at age 70 shows that
+36 variants could call a real 3%/yr ramp correctly only 79% of the time, and the
+data achieved 0.757. **It is performing at the ceiling its size allows.** About
+300 variants would be needed. A deeper point survives the arithmetic: in a
+relative-fitness model, "TET2 improves" and "everyone else degrades while TET2 is
+protected" are the same model, and separating them needs an absolute measurement
+of wild-type output that no observational cohort provides.
+
 **The estimate was checked against the literature, and a parameter was wrong.**
 Reading Watson 2020, Mitchell 2022 and Fabre 2022 showed that two independent
 methods put the stem-cell population size at twice our initial guess. Re-running
@@ -118,7 +133,8 @@ See [`analysis/METHOD_BIAS.md`](analysis/METHOD_BIAS.md) for the study-design
 experiment and
 [`analysis/METHOD_BIAS_LITERATURE.md`](analysis/METHOD_BIAS_LITERATURE.md) and
 [`analysis/OPEN_PROBLEMS.md`](analysis/OPEN_PROBLEMS.md) for what checking it
-against the papers corrected, [`analysis/FINDINGS.md`](analysis/FINDINGS.md) for the exploration,
+against the papers corrected,
+[`analysis/TET2_AGE.md`](analysis/TET2_AGE.md) for the age-dependence question, [`analysis/FINDINGS.md`](analysis/FINDINGS.md) for the exploration,
 [`analysis/LITERATURE_REVIEW.md`](analysis/LITERATURE_REVIEW.md) for what the
 papers changed, and [`reference/README.md`](reference/README.md) for data
 provenance.

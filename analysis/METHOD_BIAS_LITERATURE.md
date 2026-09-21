@@ -222,8 +222,13 @@ Stage E's contribution is putting a number on it, not noticing it.
    non-monotonic in fitness at fixed size. What remains unexplained is
    specific: Fabre's fast drivers show little deceleration while still growing
    fast, which this model produces only after a clone has stopped.
-3. **Age-dependent fitness for TET2**, in the direction Fabre reports. Still
-   open, and now the only one.
+3. ~~Age-dependent fitness for TET2.~~ **Closed in
+   [`TET2_AGE.md`](TET2_AGE.md), as a negative result with a number on it.**
+   Both mechanisms are now implemented and behave differently. The apparent
+   TET2 age effect in this data does not survive stratifying by cohort — the
+   point estimate falls 87%, which is confounding rather than noise — and a
+   power analysis says 36 variants could not detect a real 3%/yr ramp anyway
+   (ceiling 0.79; the data achieved 0.757). Roughly 300 would be needed.
 
 ---
 

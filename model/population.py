@@ -37,7 +37,8 @@ import numpy as np
 
 def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
                     dt=0.1, max_clones=64, seed=None, record_ages=None,
-                    initial_clones=0, s_weights=None):
+                    initial_clones=0, s_weights=None,
+                    s_ramp=None, wt_decline=0.0, age_effects_from=50.0):
     """
     Simulate a cohort of people from birth to `years`.
 
@@ -55,6 +56,22 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
         effect at a time requires.
     s_weights : sequence of float, optional
         Probabilities for the values in `s`. Uniform when omitted.
+    s_ramp : float or sequence of float, optional
+        Fractional gain in a clone's OWN fitness per year of host age beyond
+        `age_effects_from`. One value per entry of `s` when a sequence. This is
+        the "the mutation gets better" mechanism.
+    wt_decline : float
+        Exponential decay rate of the WILD-TYPE reproductive weight per year of
+        host age beyond `age_effects_from`. This is the "everyone else gets
+        worse" mechanism, and it is not the same thing: fitness in a Moran
+        process is relative, so degrading the wild type lifts every clone at
+        once, while `s_ramp` lifts only the classes it is given for. Mouse work
+        attributes the TET2 age effect mainly to this one — aged non-mutant
+        stem cells losing ground rather than the mutant gaining it.
+    age_effects_from : float
+        Host age at which both effects start. Before it nothing changes, so a
+        run with either parameter still reduces exactly to the constant model
+        over the early decades.
     mu : float
         Driver mutation rate per cell per year. With N cells, new clones
         appear at rate N*mu per year.
@@ -103,19 +120,29 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
         s_weights = np.asarray(s_weights, dtype=np.float64)
         s_weights = s_weights / s_weights.sum()
 
+    ramp_values = (np.zeros_like(s_values) if s_ramp is None
+                   else np.broadcast_to(np.atleast_1d(
+                       np.asarray(s_ramp, dtype=np.float64)),
+                       s_values.shape).copy())
+
     def draw_s(size):
+        """Draw a fitness and the ramp that belongs to it, as a pair."""
         if s_values.size == 1:
-            return np.full(size, s_values[0])
-        return rng.choice(s_values, size=size, p=s_weights)
+            idx = np.zeros(size, dtype=np.int64)
+        else:
+            idx = rng.choice(s_values.size, size=size, p=s_weights)
+        return s_values[idx], ramp_values[idx]
 
     sizes = np.zeros((people, max_clones), dtype=np.float64)
     fitness = np.zeros((people, max_clones), dtype=np.float64)
     births = np.full((people, max_clones), np.nan, dtype=np.float64)
+    ramp = np.zeros((people, max_clones), dtype=np.float64)
     overflow = 0
 
     if initial_clones:
         sizes[:, :initial_clones] = 1.0
-        fitness[:, :initial_clones] = draw_s((people, initial_clones))
+        fitness[:, :initial_clones], ramp[:, :initial_clones] = \
+            draw_s((people, initial_clones))
         births[:, :initial_clones] = 0.0
 
     snapshots, birth_snaps, fitness_snaps = [], [], []
@@ -130,9 +157,19 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
         # W is the total reproductive weight. Wild-type cells weigh 1 each,
         # clone cells weigh (1+s) each. A clone's share of W is its chance of
         # being the one that reproduces.
+        # --- age effects -----------------------------------------------------
+        # Both act only after `age_effects_from`, and they are distinguishable:
+        # `s_ramp` raises the fitness of the classes it was given for, while
+        # `wt_decline` lowers the wild type and therefore lifts EVERY clone,
+        # including ones with no ramp at all. That difference is the whole
+        # reason for implementing them separately.
+        elapsed = max(t - age_effects_from, 0.0)
+        fitness_now = fitness * (1.0 + ramp * elapsed)
+        wt_weight = np.exp(-wt_decline * elapsed)
+
         mutant_total = sizes.sum(axis=1, keepdims=True)
         wild = N - mutant_total
-        W = (sizes * (1.0 + fitness)).sum(axis=1, keepdims=True) + wild
+        W = (sizes * (1.0 + fitness_now)).sum(axis=1, keepdims=True) + wild * wt_weight
 
         # --- exact birth-death transition over the slice -------------------
         # A clone of c cells is c independent lineages. Over dt years, with
@@ -156,7 +193,7 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
         #     survivors  ~ Binomial(c, 1 - alpha)
         #     size       = survivors + NegativeBinomial(survivors, 1 - beta)
         # which is exact, and needs no small dt to be correct.
-        lam = N * (1.0 + fitness) / W          # per-cell birth rate, per year
+        lam = N * (1.0 + fitness_now) / W      # per-cell birth rate, per year
         r = lam - 1.0                          # net growth rate
         E = np.exp(np.clip(r * dt, -50, 50))
 
@@ -184,6 +221,7 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
         extinct = sizes <= 0
         sizes[extinct] = 0.0
         fitness[extinct] = 0.0
+        ramp[extinct] = 0.0
         births[extinct] = np.nan
 
         # --- new mutations --------------------------------------------------
@@ -195,7 +233,7 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
             if take:
                 slots = free[:take]
                 sizes[k, slots] = 1.0
-                fitness[k, slots] = draw_s(slots.size)
+                fitness[k, slots], ramp[k, slots] = draw_s(slots.size)
                 births[k, slots] = t
 
         # --- snapshot --------------------------------------------------------

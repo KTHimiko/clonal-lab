@@ -68,9 +68,9 @@ times larger.
 
 **Fitness is identifiable from this data; the mutation rate is not.** A 180-point
 grid scored by approximate Bayesian computation puts the selection coefficient
-at s = 0.10 per year, with every accepted point at the same value. The mutation
+at s = 0.13 per year, with every accepted point at the same value. The mutation
 rate stays spread over 91% of the grid. The distance surface shows why: a
-vertical ridge at s = 0.10 running across all mutation rates. Shape responds to
+vertical ridge running across all mutation rates. Shape responds to
 fitness; counts respond to mutation rate, and counts cannot be computed without
 a screening denominator the data does not carry.
 
@@ -79,8 +79,16 @@ about twice as fast as DNMT3A ones, and within DNMT3A the R882 hotspot
 produces clones nearly twice the size at the same median age
 (p = 5.4 × 10⁻⁵).
 
-See [`analysis/FINDINGS.md`](analysis/FINDINGS.md) for the full exploration
-and [`reference/README.md`](reference/README.md) for data provenance.
+**The estimate was checked against the literature, and a parameter was wrong.**
+Reading Watson 2020, Mitchell 2022 and Fabre 2022 showed that two independent
+methods put the stem-cell population size at twice our initial guess. Re-running
+with the corrected value improved the fit 2.4-fold and moved s from 0.10 to
+0.13 per year — into the range of published per-variant estimates.
+
+See [`analysis/FINDINGS.md`](analysis/FINDINGS.md) for the exploration,
+[`analysis/LITERATURE_REVIEW.md`](analysis/LITERATURE_REVIEW.md) for what the
+papers changed, and [`reference/README.md`](reference/README.md) for data
+provenance.
 
 ## Data
 

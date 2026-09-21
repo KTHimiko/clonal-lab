@@ -33,6 +33,7 @@ The public data agrees: age explains only 9% of the variance in clone size
 | **E** — method bias | which study design recovers a known truth | **done** |
 | **E2** — open problems | checked against the literature and a third method | **done** |
 | **E3** — TET2 and age | can this data constrain age-dependent fitness? | **done** |
+| **F** — real cohort | the same three designs on 394 real people | **done** |
 
 ## Layout
 
@@ -55,6 +56,8 @@ nextflow run pipeline/sweep.nf -profile slurm  # the grid, on a cluster
 .venv/bin/python analysis/06_method_bias.py    # what each study design recovers
 .venv/bin/python analysis/07_open_problems.py  # against a third, independent method
 .venv/bin/python analysis/08_tet2_age.py       # can the data see age-dependent fitness?
+.venv/bin/python analysis/09_units_check.py    # is s the same quantity everywhere?
+.venv/bin/python analysis/10_real_design_gap.py # the three designs on a real cohort
 ```
 
 ## Key results so far
@@ -110,6 +113,17 @@ floor — same cohorts, same variants — changes it by a factor of 4.1. Stage 1
 0.048 and stage D's 0.13 were never in conflict; they are two instruments, one
 of which does not measure what its units suggest.
 
+**The design gap is real, and measurable without a model.** Fabre's SardiNIA
+cohort — 394 people, 994 clones, up to five timepoints each — allows all three
+designs on the same individuals. Enrolling clones by detectability drops the
+measured growth rate from 0.0703 to 0.0455 per year across 770 real
+trajectories, with non-overlapping intervals: a 35% loss, no simulation
+involved. The spectrum fit and longitudinal follow-up differ by a factor of 2.42
+in these people, against 2.40 predicted from simulation and 2.42 between the two
+published papers. The age regression does worse than predicted — effectively
+zero, with an interval spanning zero — and moving only the detection floor
+changes it by a factor of 11.
+
 **The TET2 age effect is not visible here, and could not have been.** Fabre
 report TET2 clones growing faster in older people. Pooled across cohorts this
 dataset appears to agree — the gap against DNMT3A reaches P = 0.948 once the
@@ -135,6 +149,8 @@ experiment and
 [`analysis/OPEN_PROBLEMS.md`](analysis/OPEN_PROBLEMS.md) for what checking it
 against the papers corrected,
 [`analysis/TET2_AGE.md`](analysis/TET2_AGE.md) for the age-dependence question,
+[`analysis/STAGE_F_REAL_COHORT.md`](analysis/STAGE_F_REAL_COHORT.md) for the
+same designs run on a real cohort,
 [`analysis/LITERATURE_E_RESULTS.md`](analysis/LITERATURE_E_RESULTS.md) for what
 the papers say about each of those results, [`analysis/FINDINGS.md`](analysis/FINDINGS.md) for the exploration,
 [`analysis/LITERATURE_REVIEW.md`](analysis/LITERATURE_REVIEW.md) for what the
@@ -147,4 +163,10 @@ All data used is open or CC0. The main calibration set is Watson et al. 2020
 (*Science*), released under CC0 via Dryad: 1,674 driver variants with allele
 frequency, age, gene and cohort, of which 1,012 carry a usable age.
 
-No controlled-access data is used.
+A second calibration set was added in stage F: Fabre et al. 2022 (*Nature*),
+released under CC BY 4.0 via figshare — 4,287 measurements of 994 clones in 394
+individuals, with person-level identifiers and two to five timepoints each.
+
+No controlled-access data is used. The raw sequencing behind Fabre 2022 sits in
+the EGA under controlled access and was not requested or used; only the open
+derived variant table.

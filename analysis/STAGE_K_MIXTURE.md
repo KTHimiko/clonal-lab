@@ -64,70 +64,99 @@ just moves to a different place on the grid.
 
 ---
 
-## The diagnosis, and it overturns the hypothesis that motivated the stage
+## The diagnosis — corrected after the fact, twice
 
-The stage was launched on the idea that the missing ingredient was **fitness
-heterogeneity**: real clones differ from each other, ours all shared one `s`, and
-that was why the observed spread of growth rates (0.200) exceeded anything a
-single-`s` model could produce (0.132).
+**The first version of this document got the diagnosis wrong, and the grid it
+was committed alongside contradicts it.** The wrong version is quoted below,
+because deleting it would hide how the error happened.
 
-Two measurements say that is not the main story.
+> *"The model's clones are about twice as large as the observed ones […] These
+> are not two failures. They are one."*
 
-**First: there is no excess technical noise.** Fabre's data includes 51 usable
-triplets — the same variant, in the same person, at the same draw, sequenced
-three times. Comparing their scatter against binomial read sampling:
+### What is actually true about clone sizes
 
-| | log(VAF) scatter |
-|---|---|
-| expected from read depth alone | 0.349 |
-| observed across replicates | 0.319 |
-| **overdispersion** | **0.8× the variance** |
+At the point that fits the spectrum best — mean 0.06, shape 4.0, **N = 200,000**
+— the VAF distribution matches well at every quantile:
 
-Slightly *less* than binomial, not more. The assay is well behaved, and the
-hypothesis that unmodelled technical noise inflated the rate spread is dead.
+| quantile | observed | simulated | ratio |
+|---|---|---|---|
+| q10 | 0.0029 | 0.0026 | 0.91 |
+| q25 | 0.0045 | 0.0035 | 0.78 |
+| q50 | 0.0072 | 0.0061 | 0.85 |
+| q75 | 0.0147 | 0.0149 | 1.01 |
+| q90 | 0.0401 | 0.0386 | 0.96 |
 
-**Second: measurement noise is a function of clone size, and that ties the two
-failures together.** Log-scale noise goes as `1/√(VAF·depth)`, so small clones
-are measured imprecisely and large ones precisely:
+**The model reproduces the clone size distribution.** The "twice as large" claim
+came from a spot check made before the sweep, with N pinned at 100,000. Letting N
+move fixed it, and the write-up was not updated to notice.
 
-| VAF | noise on the fitted rate | width it adds |
-|---|---|---|
-| **0.0072** *(observed median)* | 0.0338 /yr | **0.0867** |
-| 0.0149 *(best fit's median)* | 0.0234 /yr | 0.0601 |
-| 0.0600 | 0.0114 /yr | 0.0292 |
+### What is actually wrong
 
-The model's clones are about **twice as large** as the observed ones. Because
-they are larger, their trajectories are measured more precisely, so their fitted
-rates cluster more tightly — and the rate distribution comes out too narrow.
+The failure is at the bottom of the growth-rate distribution, and only there:
 
-**These are not two failures. They are one.** The model cannot produce a
-population of clones as small as those observed, and everything else follows.
-Roughly 40% of the observed rate spread is measurement noise on small clones,
-not biological variation in fitness.
+| quantile | observed | simulated | difference |
+|---|---|---|---|
+| q10 | −0.0451 | +0.0187 | **+0.0638** |
+| q25 | −0.0002 | +0.0551 | +0.0553 |
+| q50 | +0.0531 | +0.0857 | +0.0326 |
+| q75 | +0.1006 | +0.1063 | +0.0057 |
+| q90 | +0.1548 | +0.1259 | −0.0289 |
+
+The top of the distribution matches. **The model does not produce the clones
+that shrink:** 5.6% against 25.1% observed.
+
+### Testing the detection floor, which was the obvious suspect
+
+At a floor of VAF 0.002 the measurement noise on a fitted slope is 0.030 per
+year, which is large enough to manufacture apparent decline. Raising the floor
+on the observed data — which removes the noisiest clones — tests that directly:
+
+| floor | n | % declining | width | expected noise |
+|---|---|---|---|---|
+| 0.002 | 518 | 25.1% | 0.1999 | 0.0302 /yr |
+| 0.008 | 238 | 23.5% | 0.1387 | 0.0195 /yr |
+| **0.030** | 74 | **18.9%** | **0.1138** | 0.0102 /yr |
+
+**Two answers, and they point different ways.**
+
+The *width* discrepancy was largely measurement noise. At a floor of 0.03 the
+observed width is 0.1138 against the model's 0.1072 — they nearly agree, and the
+gap that motivated this whole stage was mostly an artifact of fitting slopes to
+clones measured at three mutant reads.
+
+The *declining fraction* is not. It falls from 25.1% to 18.9% and stops there,
+with the noise three times smaller. **About a fifth of real clones are genuinely
+shrinking**, and the model produces a quarter of that.
+
+### Why the model cannot do it
+
+It can — at the wrong size. The grid reaches 42.8% declining clones, but only at
+mean 0.16 with N = 400,000, where the median VAF is **0.4127**: fifty-seven times
+the observed 0.0072.
+
+**In this model, decline is a consequence of size.** A clone shrinks when fitter
+neighbours overtake it, which requires the marrow to be filling. A small clone in
+a mostly empty marrow has nothing to lose to. Reality has small clones that
+shrink anyway, and the model has no mechanism for that.
+
+That is the structural inadequacy, stated correctly: **the model couples decline
+to clone size, and the data does not.**
 
 ---
 
-## What that leaves
+## What would decouple them
 
-The question is no longer "what is missing from the fitness distribution". It is
-**why the model's clones are too big at every parameter combination tried**,
-across an eightfold range of N.
+None of these was tested, and each is a different model rather than a different
+parameter:
 
-Candidates, none tested here:
-
-- **The detection floor.** We admit simulated clones at VAF ≥ 0.002 uniformly.
-  The real assay's sensitivity varies with depth per site and per sample, and
-  Fabre applied a filtering step we did not reproduce.
-- **When clones start.** The model seeds mutations at a constant rate from birth.
-  If real driver acquisition is weighted later in life, clones would be younger
-  and smaller at the same age.
-- **The niche.** The Moran normalisation lets a clone grow until it meets
-  competition. Structure in the marrow — clones confined to sub-compartments —
-  would cap them earlier.
-
-Each is a different model, not a different parameter. That is what "structural"
-means here, and it is why the pre-registration's answer is to stop rather than
-keep fitting.
+- **Fluctuating fitness.** A clone's advantage is fixed for life here. If it
+  varies — with inflammation, infection, treatment — clones would decline at any
+  size.
+- **Blood composition.** VAF measures a clone's share of circulating cells, not
+  of stem cells. Shifts in lineage output move VAF without moving the clone.
+- **Niche structure.** Competition is global here. If clones sit in
+  sub-compartments, a small clone can lose its local contest while the marrow at
+  large is empty.
 
 ---
 

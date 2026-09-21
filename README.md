@@ -35,6 +35,7 @@ The public data agrees: age explains only 9% of the variance in clone size
 | **E3** — TET2 and age | can this data constrain age-dependent fitness? | **done** |
 | **F** — real cohort | the same three designs on 394 real people | **done** |
 | **G** — multihit | can bulk VAF separate two hits in one cell from two clones? | **done** |
+| **H** — TET2 longitudinal | each clone as its own control, over 13 years | **done** |
 
 ## Layout
 
@@ -60,6 +61,7 @@ nextflow run pipeline/sweep.nf -profile slurm  # the grid, on a cluster
 .venv/bin/python analysis/09_units_check.py    # is s the same quantity everywhere?
 .venv/bin/python analysis/10_real_design_gap.py # the three designs on a real cohort
 .venv/bin/python analysis/11_multihit.py       # two hits in one cell, or two clones?
+.venv/bin/python analysis/12_tet2_longitudinal.py  # TET2 and age, within clone
 ```
 
 ## Key results so far
@@ -126,7 +128,15 @@ published papers. The age regression does worse than predicted — effectively
 zero, with an interval spanning zero — and moving only the detection floor
 changes it by a factor of 11.
 
-**The TET2 age effect is not visible here, and could not have been.** Fabre
+**TET2 clones are still growing after 75; DNMT3A clones are not.** Splitting 234
+trajectories at their own midpoint, so each clone is its own control, DNMT3A's
+late-half growth rate is 0.0096 per year with an interval spanning zero while
+TET2's is 0.0401 with an interval that excludes it. Every gene decelerates, as
+clonal interference predicts. The between-gene comparison is borderline — the
+one-sided P is 0.968 and the two-sided interval grazes zero — and three related
+measures were tested, which is recorded rather than hidden.
+
+**The earlier cross-sectional attempt found nothing, and could not have.** Fabre
 report TET2 clones growing faster in older people. Pooled across cohorts this
 dataset appears to agree — the gap against DNMT3A reaches P = 0.948 once the
 detection floor is dropped — but stratifying by cohort collapses the estimate by
@@ -155,6 +165,8 @@ against the papers corrected,
 same designs run on a real cohort,
 [`analysis/MULTIHIT.md`](analysis/MULTIHIT.md) for why bulk sequencing cannot
 answer a phasing question,
+[`analysis/TET2_LONGITUDINAL.md`](analysis/TET2_LONGITUDINAL.md) for TET2 tested
+with each clone as its own control,
 [`analysis/LITERATURE_E_RESULTS.md`](analysis/LITERATURE_E_RESULTS.md) for what
 the papers say about each of those results, [`analysis/FINDINGS.md`](analysis/FINDINGS.md) for the exploration,
 [`analysis/LITERATURE_REVIEW.md`](analysis/LITERATURE_REVIEW.md) for what the

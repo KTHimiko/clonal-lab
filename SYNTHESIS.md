@@ -207,7 +207,17 @@ mechanism, and the model implements it through the Moran normalisation `W`.
    ([`STAGE_J_FABRE_GRID.md`](analysis/STAGE_J_FABRE_GRID.md))
 3. **Phase.** Everything about multihit waits on it, and no amount of bulk
    sequencing supplies it.
-4. **Why the model's clones are too big.** Stage K established that no
+4. ~~Why the model's clones are too big.~~ **Corrected: they are not.** With N
+   free at 200,000 the size distribution matches within 20% at every quantile.
+   The failure is that the model produces 5.6% declining clones against ~19%
+   observed, and stage L tested two mechanisms for it. Both fail the same way:
+   growth is multiplicative, so any added variance inflates clone sizes, and the
+   sizes have no headroom. The one remaining candidate — shifts in blood
+   composition, which move measured VAF without moving the clone — is the only
+   one that does not add growth variance.
+   ([`STAGE_L_MECHANISMS.md`](analysis/STAGE_L_MECHANISMS.md))
+
+5. **Superseded.** Stage K established that no
    combination of fitness distribution and stem-cell population — across an
    eightfold range of N — reproduces both the observed clone sizes and their
    growth rates, and that the second failure follows from the first. The

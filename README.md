@@ -46,6 +46,7 @@ The public data agrees: age explains only 9% of the variance in clone size
 | **I** — replication | pre-registered, then abandoned for a stated reason | **done** |
 | **J** — tailored grid | two estimators on one cohort; one has no inverse | **done** |
 | **K** — mixture, N free | can any model version fit both observables? | **done** |
+| **L** — mechanisms | niche structure and fluctuating fitness, both tested | **done** |
 
 ## Layout
 

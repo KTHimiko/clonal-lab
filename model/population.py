@@ -38,7 +38,8 @@ import numpy as np
 def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
                     dt=0.1, max_clones=64, seed=None, record_ages=None,
                     initial_clones=0, s_weights=None,
-                    s_ramp=None, wt_decline=0.0, age_effects_from=50.0):
+                    s_ramp=None, wt_decline=0.0, age_effects_from=50.0,
+                    niches=1, s_volatility=0.0, s_tau=5.0):
     """
     Simulate a cohort of people from birth to `years`.
 
@@ -72,6 +73,33 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
         Host age at which both effects start. Before it nothing changes, so a
         run with either parameter still reduces exactly to the constant model
         over the early decades.
+    s_volatility : float
+        Standard deviation of a clone's fitness fluctuation around its own
+        mean. Zero reproduces the fixed-fitness model exactly.
+
+        Stage K found the data demanding decline that is NOT a consequence of
+        size: about a fifth of real clones shrink, at sizes where the model's
+        clones have nothing to lose to. Niche structure was tested and moved
+        that fraction by two points while breaking the size distribution. A
+        fitness that varies over time decouples the two directly — a clone can
+        have a bad decade at any size, whatever its neighbours are doing.
+    s_tau : float
+        Correlation time of that fluctuation, in years. Short means the
+        fluctuation averages out within a follow-up window and changes little;
+        long means a clone can spend a whole study period disadvantaged.
+    niches : int
+        Number of independent compartments the stem cell pool is divided into.
+        Competition is resolved WITHIN a compartment: a clone born in one
+        competes only against the N/niches cells there.
+
+        With `niches=1` this is exactly the global Moran process and every
+        earlier result is unchanged. Above 1 it decouples decline from global
+        size, which is what stage K found the data demanding — a clone can lose
+        its local contest while the marrow at large is nearly empty.
+
+        The ceiling it imposes is real and worth knowing: a clone confined to
+        one compartment cannot exceed VAF 1/(2*niches), so the observed q90 of
+        0.04 needs `niches` no larger than about 12.
     mu : float
         Driver mutation rate per cell per year. With N cells, new clones
         appear at rate N*mu per year.
@@ -135,6 +163,13 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
 
     sizes = np.zeros((people, max_clones), dtype=np.float64)
     fitness = np.zeros((people, max_clones), dtype=np.float64)
+    # which compartment each clone was born into; -1 marks an empty slot
+    niche = np.full((people, max_clones), -1, dtype=np.int64)
+    # the current fitness excursion of each clone, an Ornstein-Uhlenbeck process
+    excursion = np.zeros((people, max_clones), dtype=np.float64)
+    rho = float(np.exp(-dt / s_tau)) if s_volatility > 0 else 0.0
+    niche_capacity = N / float(niches)
+    person_of = np.repeat(np.arange(people), max_clones).reshape(people, max_clones)
     births = np.full((people, max_clones), np.nan, dtype=np.float64)
     ramp = np.zeros((people, max_clones), dtype=np.float64)
     overflow = 0
@@ -144,6 +179,8 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
         fitness[:, :initial_clones], ramp[:, :initial_clones] = \
             draw_s((people, initial_clones))
         births[:, :initial_clones] = 0.0
+        niche[:, :initial_clones] = rng.integers(0, niches,
+                                                 (people, initial_clones))
 
     snapshots, birth_snaps, fitness_snaps = [], [], []
     snap_at = list(np.sort(record_ages))
@@ -164,12 +201,40 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
         # including ones with no ramp at all. That difference is the whole
         # reason for implementing them separately.
         elapsed = max(t - age_effects_from, 0.0)
-        fitness_now = fitness * (1.0 + ramp * elapsed)
+        if s_volatility > 0:
+            # z_new = rho*z + sqrt(1-rho^2)*sigma*noise keeps the marginal
+            # standard deviation at sigma whatever dt is, so the amount of
+            # fluctuation does not depend on the integration step.
+            excursion = (rho * excursion
+                         + np.sqrt(1.0 - rho * rho) * s_volatility
+                         * rng.standard_normal(excursion.shape))
+            fitness_now = fitness * (1.0 + ramp * elapsed) + excursion
+            # a clone cannot have a negative birth rate
+            np.clip(fitness_now, -0.9, None, out=fitness_now)
+        else:
+            fitness_now = fitness * (1.0 + ramp * elapsed)
         wt_weight = np.exp(-wt_decline * elapsed)
 
-        mutant_total = sizes.sum(axis=1, keepdims=True)
-        wild = N - mutant_total
-        W = (sizes * (1.0 + fitness_now)).sum(axis=1, keepdims=True) + wild * wt_weight
+        if niches == 1:
+            mutant_total = sizes.sum(axis=1, keepdims=True)
+            wild = N - mutant_total
+            W = ((sizes * (1.0 + fitness_now)).sum(axis=1, keepdims=True)
+                 + wild * wt_weight)
+            W_here = W
+            capacity = N
+        else:
+            # Totals per (person, compartment), accumulated into a flat array so
+            # the whole cohort is reduced in one pass.
+            live = niche >= 0
+            flat = person_of * niches + np.where(live, niche, 0)
+            cells = np.zeros(people * niches)
+            weight = np.zeros(people * niches)
+            np.add.at(cells, flat[live], sizes[live])
+            np.add.at(weight, flat[live], (sizes * (1.0 + fitness_now))[live])
+            wild_n = np.maximum(niche_capacity - cells, 0.0)
+            W_flat = weight + wild_n * wt_weight
+            W_here = np.where(live, W_flat[flat], 1.0)
+            capacity = niche_capacity
 
         # --- exact birth-death transition over the slice -------------------
         # A clone of c cells is c independent lineages. Over dt years, with
@@ -193,7 +258,7 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
         #     survivors  ~ Binomial(c, 1 - alpha)
         #     size       = survivors + NegativeBinomial(survivors, 1 - beta)
         # which is exact, and needs no small dt to be correct.
-        lam = N * (1.0 + fitness_now) / W      # per-cell birth rate, per year
+        lam = capacity * (1.0 + fitness_now) / W_here   # per-cell birth rate
         r = lam - 1.0                          # net growth rate
         E = np.exp(np.clip(r * dt, -50, 50))
 
@@ -215,13 +280,15 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
         extra = np.zeros_like(counts)
         extra[grew] = rng.negative_binomial(survivors[grew], (1.0 - beta)[grew])
         sizes = (survivors + extra).astype(np.float64)
-        np.clip(sizes, 0, N, out=sizes)
+        np.clip(sizes, 0, capacity, out=sizes)
 
         # a clone that hit zero is gone: free its slot
         extinct = sizes <= 0
         sizes[extinct] = 0.0
         fitness[extinct] = 0.0
         ramp[extinct] = 0.0
+        niche[extinct] = -1
+        excursion[extinct] = 0.0
         births[extinct] = np.nan
 
         # --- new mutations --------------------------------------------------
@@ -235,6 +302,7 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
                 sizes[k, slots] = 1.0
                 fitness[k, slots], ramp[k, slots] = draw_s(slots.size)
                 births[k, slots] = t
+                niche[k, slots] = rng.integers(0, niches, slots.size)
 
         # --- snapshot --------------------------------------------------------
         while snap_at and t >= snap_at[0] - 1e-9:

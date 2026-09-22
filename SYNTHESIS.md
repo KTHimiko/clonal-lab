@@ -212,10 +212,15 @@ mechanism, and the model implements it through the Moran normalisation `W`.
    The failure is that the model produces 5.6% declining clones against ~19%
    observed, and stage L tested two mechanisms for it. Both fail the same way:
    growth is multiplicative, so any added variance inflates clone sizes, and the
-   sizes have no headroom. The one remaining candidate — shifts in blood
-   composition, which move measured VAF without moving the clone — is the only
-   one that does not add growth variance.
-   ([`STAGE_L_MECHANISMS.md`](analysis/STAGE_L_MECHANISMS.md))
+   sizes have no headroom. All three candidates are now
+   closed: niche structure buys two points of decline, fluctuating fitness
+   inflates clone sizes, and blood composition fits everything it was aimed at
+   while predicting a within-person correlation of 0.674 against 0.129 observed.
+   Each failed for a different reason, and together they bound the missing
+   mechanism: it cannot add variance to real growth, cannot need nearby
+   competitors, and cannot act on all of a person's clones at once.
+   ([`STAGE_L_MECHANISMS.md`](analysis/STAGE_L_MECHANISMS.md),
+   [`STAGE_M_COMPOSITION.md`](analysis/STAGE_M_COMPOSITION.md))
 
 5. **Superseded.** Stage K established that no
    combination of fitness distribution and stem-cell population — across an

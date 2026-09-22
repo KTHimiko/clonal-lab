@@ -137,6 +137,18 @@ the mutation rate and the one unbiased age-based estimator both need a screening
 denominator; the cross-sectional TET2 test had a power ceiling of 0.79; and
 multihit needs phase, which bulk sequencing does not measure.
 
+## Licence
+
+The code and the written analysis in this repository are under the
+[MIT licence](LICENSE).
+
+**The data is not, and is not distributed here.** Every dataset used carries its
+own terms — Watson 2020 is CC0, Fabre 2022 and Mitchell 2022 are CC BY 4.0,
+Robertson 2022 is public through NCBI GEO — and none of it is versioned in this
+repository. [`reference/README.md`](reference/README.md) gives the DOI, the
+licence and the download for each, so the analyses can be reproduced without any
+of it being redistributed from here.
+
 ## Data
 
 All data used is open or CC0. The main calibration set is Watson et al. 2020

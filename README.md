@@ -27,7 +27,28 @@ The public data agrees: age explains only 9% of the variance in clone size
 (R² = 0.089, p = 3 × 10⁻²²). The signal is real and the spread dominates.
 **What must be reproduced is the cloud, not the line.**
 
-## Status
+## Status — paused, and complete as it stands
+
+Fifteen stages, and the work stops at a clean boundary rather than mid-question.
+What it set out to measure is measured; what it could not resolve is bounded and
+written down rather than left open.
+
+**Settled.** Study designs recover very different fractions of a known fitness,
+the ordering holds in a real cohort, and one result — enrolling clones by
+detectability costs 35% of the measured growth rate — needs no model at all.
+
+**Bounded, not solved.** Five mechanisms were tested for the decline the model
+cannot produce, and all five rejected, each by a different argument. What
+survives is a specification of what the answer must satisfy, in
+[`STAGE_O_JOINT.md`](analysis/STAGE_O_JOINT.md).
+
+**Blocked on data that does not exist openly.** The TET2 age question needs
+about 300 variants against the 36 available; the multihit question needs phase,
+which bulk sequencing does not measure; a replication of stage H needs a cohort
+with more than the 8 usable clones the best candidate holds.
+
+Everything is reproducible from [`SYNTHESIS.md`](SYNTHESIS.md), which is the one
+document to read first.
 
 | Stage | Goal | |
 |---|---|---|

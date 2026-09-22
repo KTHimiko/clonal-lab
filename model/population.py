@@ -40,7 +40,7 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
                     initial_clones=0, s_weights=None,
                     s_ramp=None, wt_decline=0.0, age_effects_from=50.0,
                     niches=1, s_volatility=0.0, s_tau=5.0,
-                    switch_rate=0.0, switch_delta=0.0):
+                    switch_rate=0.0, switch_delta=0.0, switch_from=0.0):
     """
     Simulate a cohort of people from birth to `years`.
 
@@ -90,6 +90,18 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
         variance that inflated clone sizes came from symmetric fluctuation,
         whose upswings compound. A drop that only goes down cannot inflate
         anything.
+    switch_from : float
+        Host age below which the hazard is zero. Default 0 means the hazard runs
+        from birth, which is what stage N tested.
+
+        This is the one variation stage N's bracket does not exclude, and the
+        reason is arithmetic. A hazard running from birth accumulates over a
+        CLONE's lifetime, so a clone that has existed forty years has faced
+        eight times the risk of one that has existed five — and since the oldest
+        clones are the largest, the mechanism strips the tail the spectrum
+        needs. A hazard that only switches on late in the host's life bounds
+        every clone's exposure by (current age - switch_from) regardless of when
+        it arose, which removes the differential almost entirely.
     switch_delta : float
         How much fitness falls when a clone switches. Subtracted, so a clone at
         s = 0.06 with a delta of 0.10 becomes s = -0.04 and shrinks.
@@ -224,7 +236,7 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
         # reason for implementing them separately.
         # A clone that switches keeps the lower fitness for good, so the drop
         # is applied to `fitness` itself rather than to the per-step value.
-        if p_switch > 0:
+        if p_switch > 0 and t >= switch_from:
             eligible = (sizes > 0) & ~switched
             hit = eligible & (rng.random(sizes.shape) < p_switch)
             if hit.any():

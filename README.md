@@ -48,6 +48,7 @@ The public data agrees: age explains only 9% of the variance in clone size
 | **K** — mixture, N free | can any model version fit both observables? | **done** |
 | **L** — mechanisms | niche structure and fluctuating fitness, both tested | **done** |
 | **M** — composition | fits the target, refuted by a statistic it predicts | **done** |
+| **N** — clone-specific switch | closest yet; the bracket closes from both sides | **done** |
 
 ## Layout
 

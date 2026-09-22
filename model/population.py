@@ -39,7 +39,8 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
                     dt=0.1, max_clones=64, seed=None, record_ages=None,
                     initial_clones=0, s_weights=None,
                     s_ramp=None, wt_decline=0.0, age_effects_from=50.0,
-                    niches=1, s_volatility=0.0, s_tau=5.0):
+                    niches=1, s_volatility=0.0, s_tau=5.0,
+                    switch_rate=0.0, switch_delta=0.0):
     """
     Simulate a cohort of people from birth to `years`.
 
@@ -73,6 +74,25 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
         Host age at which both effects start. Before it nothing changes, so a
         run with either parameter still reduces exactly to the constant model
         over the early decades.
+    switch_rate : float
+        Hazard, per clone per year, of a permanent drop in that clone's own
+        fitness. Zero reproduces the previous model exactly.
+
+        Stage M closed the last of three candidate mechanisms and the three
+        rejections together bound what is left: it cannot add variance to real
+        growth (sizes inflate), cannot need nearby competitors (clones are too
+        small), and cannot act on all of one person's clones at once (the
+        within-person correlation rises). A clone-specific, one-way, episodic
+        event satisfies all three, and it is what a deleterious second lesion,
+        immune clearance, or lineage exhaustion all look like in this model.
+
+        It escapes stage L's inflation argument because it is ASYMMETRIC. The
+        variance that inflated clone sizes came from symmetric fluctuation,
+        whose upswings compound. A drop that only goes down cannot inflate
+        anything.
+    switch_delta : float
+        How much fitness falls when a clone switches. Subtracted, so a clone at
+        s = 0.06 with a delta of 0.10 becomes s = -0.04 and shrinks.
     s_volatility : float
         Standard deviation of a clone's fitness fluctuation around its own
         mean. Zero reproduces the fixed-fitness model exactly.
@@ -168,6 +188,8 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
     # the current fitness excursion of each clone, an Ornstein-Uhlenbeck process
     excursion = np.zeros((people, max_clones), dtype=np.float64)
     rho = float(np.exp(-dt / s_tau)) if s_volatility > 0 else 0.0
+    switched = np.zeros((people, max_clones), dtype=bool)
+    p_switch = 1.0 - float(np.exp(-switch_rate * dt)) if switch_rate > 0 else 0.0
     niche_capacity = N / float(niches)
     person_of = np.repeat(np.arange(people), max_clones).reshape(people, max_clones)
     births = np.full((people, max_clones), np.nan, dtype=np.float64)
@@ -200,6 +222,15 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
         # `wt_decline` lowers the wild type and therefore lifts EVERY clone,
         # including ones with no ramp at all. That difference is the whole
         # reason for implementing them separately.
+        # A clone that switches keeps the lower fitness for good, so the drop
+        # is applied to `fitness` itself rather than to the per-step value.
+        if p_switch > 0:
+            eligible = (sizes > 0) & ~switched
+            hit = eligible & (rng.random(sizes.shape) < p_switch)
+            if hit.any():
+                fitness[hit] -= switch_delta
+                switched[hit] = True
+
         elapsed = max(t - age_effects_from, 0.0)
         if s_volatility > 0:
             # z_new = rho*z + sqrt(1-rho^2)*sigma*noise keeps the marginal
@@ -289,6 +320,7 @@ def simulate_cohort(N=50_000, s=0.10, mu=2e-6, years=80.0, people=1_000,
         ramp[extinct] = 0.0
         niche[extinct] = -1
         excursion[extinct] = 0.0
+        switched[extinct] = False
         births[extinct] = np.nan
 
         # --- new mutations --------------------------------------------------

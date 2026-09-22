@@ -158,6 +158,7 @@ that is easy to repeat.
 | reading the caller output instead of the cohort | a sanity check committed with the pre-registration | a spurious failed replication, caught before it was believed |
 | banding a ratio whose denominator has no inverse | a diagnostic table the write-up demanded | a 36-minute cluster run that could not have answered its own question |
 | blaming the rate spread on fitness heterogeneity | 51 technical replicate triplets in data we already held | the real cause is clone size, and the two failures are one |
+| judging a mechanism against a selection rule the observed analysis did not use | the result contradicting the signature that motivated the mechanism | a rejection that reversed once the comparison was matched |
 
 **The pattern underneath almost all of them:** before comparing two numbers,
 establish that they measure the same thing. Hotspot against gene average.
@@ -219,8 +220,17 @@ mechanism, and the model implements it through the Moran normalisation `W`.
    Each failed for a different reason, and together they bound the missing
    mechanism: it cannot add variance to real growth, cannot need nearby
    competitors, and cannot act on all of a person's clones at once.
+   A fourth — a clone-specific permanent drop in fitness — came closest: it
+   reproduces the declining fraction, the best rate fit the project has
+   produced, and a persistence signature measured in the data before the
+   mechanism was chosen. It fails the spectrum in the *opposite* direction,
+   making clones too small, because its hazard preferentially removes the oldest
+   and therefore largest clones. **The size distribution is now pinned from both
+   sides**, which turns four failures into a specification of what the answer
+   must look like.
    ([`STAGE_L_MECHANISMS.md`](analysis/STAGE_L_MECHANISMS.md),
-   [`STAGE_M_COMPOSITION.md`](analysis/STAGE_M_COMPOSITION.md))
+   [`STAGE_M_COMPOSITION.md`](analysis/STAGE_M_COMPOSITION.md),
+   [`STAGE_N_SWITCH.md`](analysis/STAGE_N_SWITCH.md))
 
 5. **Superseded.** Stage K established that no
    combination of fitness distribution and stem-cell population — across an

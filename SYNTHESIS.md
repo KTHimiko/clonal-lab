@@ -159,6 +159,8 @@ that is easy to repeat.
 | banding a ratio whose denominator has no inverse | a diagnostic table the write-up demanded | a 36-minute cluster run that could not have answered its own question |
 | blaming the rate spread on fitness heterogeneity | 51 technical replicate triplets in data we already held | the real cause is clone size, and the two failures are one |
 | judging a mechanism against a selection rule the observed analysis did not use | the result contradicting the signature that motivated the mechanism | a rejection that reversed once the comparison was matched |
+| concluding the hazard wrecked the spectrum, from runs with the population pinned | freeing the population and finding the spectrum improved | a mechanism dismissed for an artifact of the test setup |
+| anchoring an acceptance band on each arm's best | the best-rates point having a spectrum distance of 1.53 | a band only a degenerate corner could clear |
 
 **The pattern underneath almost all of them:** before comparing two numbers,
 establish that they measure the same thing. Hotspot against gene average.
@@ -228,9 +230,18 @@ mechanism, and the model implements it through the Moran normalisation `W`.
    and therefore largest clones. **The size distribution is now pinned from both
    sides**, which turns four failures into a specification of what the answer
    must look like.
+   A fifth — the same hazard tied to the carrier's age, with the clone
+   population swept jointly — reproduces the persistence signature almost
+   exactly (0.54 against 0.29, versus 0.51 against 0.36 observed), reaches 29.7%
+   declining, and beats the no-mechanism baseline on the spectrum. It fails on
+   the within-person correlation, and the failure locates the whole problem on
+   one number: **without a hazard the model gives ICC 0.278, with any hazard
+   tested it goes negative, and the data sits at 0.129 between them.** Matching
+   it needs a weak hazard; a weak hazard produces few decliners.
    ([`STAGE_L_MECHANISMS.md`](analysis/STAGE_L_MECHANISMS.md),
    [`STAGE_M_COMPOSITION.md`](analysis/STAGE_M_COMPOSITION.md),
-   [`STAGE_N_SWITCH.md`](analysis/STAGE_N_SWITCH.md))
+   [`STAGE_N_SWITCH.md`](analysis/STAGE_N_SWITCH.md),
+   [`STAGE_O_JOINT.md`](analysis/STAGE_O_JOINT.md))
 
 5. **Superseded.** Stage K established that no
    combination of fitness distribution and stem-cell population — across an

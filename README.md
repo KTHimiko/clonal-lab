@@ -49,6 +49,7 @@ The public data agrees: age explains only 9% of the variance in clone size
 | **L** — mechanisms | niche structure and fluctuating fitness, both tested | **done** |
 | **M** — composition | fits the target, refuted by a statistic it predicts | **done** |
 | **N** — clone-specific switch | closest yet; the bracket closes from both sides | **done** |
+| **O** — joint sweep | population and hazard together; the tension lands on one number | **done** |
 
 ## Layout
 
@@ -78,6 +79,7 @@ nextflow run pipeline/sweep.nf -profile slurm  # the grid, on a cluster
 .venv/bin/python analysis/13_lothian_replication.py # why the replication cannot be run
 .venv/bin/python analysis/14_fabre_grid.py     # two estimators, one cohort, one grid
 .venv/bin/python analysis/15_mixture_fit.py    # a fitness distribution, with N free
+.venv/bin/python analysis/16_joint_fit.py      # population and hazard, swept together
 ```
 ## What it found
 
